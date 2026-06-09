@@ -1,0 +1,468 @@
+﻿:root {
+    --color-bg: #f5f4f0;
+    --color-surface: #ffffff;
+    --color-surface-2: #faf9f7;
+    --color-border: #e8e4dd;
+    --color-border-light: #f0ede8;
+    --color-primary: #2a6b5e;
+    --color-primary-mid: #3d8b7a;
+    --color-primary-pale: #e8f4f1;
+    --color-warning: #e06c5a;
+    --color-warning-pale: #fef3f0;
+    --color-accent: #c8854c;
+    --color-accent-pale: #fdf0e6;
+    --color-text: #1e2622;
+    --color-text-mid: #4a5550;
+    --color-text-muted: #8a9490;
+    --color-danger: #e06c5a;
+    --color-danger-pale: #fef3f0;
+    --shadow-card: 0 2px 16px rgba(42,107,94,0.08), 0 1px 4px rgba(0,0,0,0.04);
+    --radius-card: 4px;
+    --radius-pill: 100px;
+    --radius-sm: 6px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    --transition: 0.18s ease;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE CARD  (replaces Bootstrap .card)
+   ══════════════════════════════════════════════════════════════ */
+
+.page-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-border-light);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+/* ── Card Header ──────────────────────────────────────────── */
+.page-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 2rem;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);
+    gap: 1rem;
+}
+
+.page-card__title {
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+    .page-card__title em {
+        font-style: italic;
+        opacity: 0.8;
+    }
+
+/* ── Create / primary action button ──────────────────────── */
+.btn-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--radius-pill);
+    border: 1.5px solid rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    white-space: nowrap;
+}
+
+    .btn-create:hover,
+    .btn-create:focus {
+        background: rgba(255,255,255,0.22);
+        border-color: rgba(255,255,255,0.9);
+        transform: translateY(-1px);
+        color: #fff;
+        text-decoration: none;
+    }
+
+/* ── Card Body ────────────────────────────────────────────── */
+.page-card__body {
+    padding: 0.5rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DATATABLE TOOLBAR  (search, length, export buttons)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Wrapper injected by DataTables */
+div.dataTables_wrapper {
+    font-family: var(--font-body);
+    color: var(--color-text);
+}
+
+    /* Top row: buttons left, search right */
+    div.dataTables_wrapper div.dataTables_length,
+    div.dataTables_wrapper div.dataTables_filter {
+        margin-bottom: 1rem;
+    }
+
+        div.dataTables_wrapper div.dataTables_filter label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+.dataTables_filter input {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.9rem;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    width: 220px !important;
+}
+
+    .dataTables_filter input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(42,107,94,0.1);
+    }
+
+.dataTables_length select {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 2rem 0.45rem 0.75rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a9490' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    outline: none;
+    transition: border-color var(--transition);
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+    .dataTables_length select:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(42,107,94,0.1);
+    }
+
+/* Export / copy buttons (dt-buttons) */
+.dt-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+    .dt-buttons .btn,
+    .dt-button {
+        font-family: var(--font-body) !important;
+        font-size: 0.775rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.04em;
+        padding: 0.42rem 1rem !important;
+        border-radius: var(--radius-pill) !important;
+        border: 1px solid var(--color-border) !important;
+        background: var(--color-surface) !important;
+        color: var(--color-text-mid) !important;
+        cursor: pointer;
+        transition: background var(--transition), border-color var(--transition), color var(--transition) !important;
+        box-shadow: none !important;
+        text-transform: uppercase;
+    }
+
+        .dt-buttons .btn:hover,
+        .dt-button:hover {
+            background: var(--color-primary-pale) !important;
+            border-color: var(--color-primary) !important;
+            color: var(--color-primary) !important;
+        }
+
+/* ══════════════════════════════════════════════════════════════
+   TABLE
+   ══════════════════════════════════════════════════════════════ */
+
+table.dataTable {
+    width: 100% !important;
+    display: table !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+}
+
+    /* ── Head ─────────────────────────────────────────────────── */
+    table.dataTable thead tr {
+        background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);
+    }
+
+    table.dataTable thead th {
+        font-family: var(--font-body);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.9);
+        padding: 1rem 1.1rem;
+        border: none !important;
+        text-align: center;
+        white-space: nowrap;
+        background: transparent;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+    }
+
+        /* Sort arrows */
+        table.dataTable thead th.sorting::after,
+        table.dataTable thead th.sorting_asc::after,
+        table.dataTable thead th.sorting_desc::after {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            margin-left: 6px;
+        }
+
+        table.dataTable thead th.sorting_asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        table.dataTable thead th.sorting_desc::after {
+            content: '↓';
+            opacity: 1;
+        }
+
+        table.dataTable thead th.sorting::after {
+            content: '↕';
+        }
+
+    /* Remove default DataTables sort icons */
+    table.dataTable thead .sorting,
+    table.dataTable thead .sorting_asc,
+    table.dataTable thead .sorting_desc {
+        background-image: none !important;
+    }
+
+    /* ── Body rows ────────────────────────────────────────────── */
+    table.dataTable tbody tr {
+        background: var(--color-surface);
+        border-bottom: 1px solid var(--color-border-light);
+        transition: background var(--transition), transform var(--transition);
+    }
+
+        /* Alternating row */
+        table.dataTable tbody tr:nth-child(even) {
+            background: var(--color-surface-2);
+        }
+
+        table.dataTable tbody tr:hover {
+            background: var(--color-primary-pale) !important;
+            z-index: 1;
+            position: relative;
+        }
+
+    table.dataTable tbody td {
+        padding: 0.9rem 1.1rem;
+        border: none !important;
+        color: var(--color-text);
+        text-align: center;
+        vertical-align: middle;
+    }
+
+        /* Row number column — muted */
+        table.dataTable tbody td:first-child {
+            color: var(--color-text-muted);
+            font-size: 0.775rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            width: 1%;
+        }
+
+        /* Actions column — no wrap */
+        table.dataTable tbody td:last-child,
+        table.dataTable thead th:last-child {
+            white-space: nowrap;
+            width: 1%;
+        }
+
+    /* ── Selected row (DataTables) ────────────────────────────── */
+    table.dataTable tbody tr.selected {
+        background: var(--color-primary-pale) !important;
+    }
+
+/* ══════════════════════════════════════════════════════════════
+   ACTION ICONS
+   ══════════════════════════════════════════════════════════════ */
+
+.tbl-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    color: var(--color-primary);
+    background: var(--color-primary-pale);
+    border: 1px solid transparent;
+}
+
+    .tbl-action:hover {
+        box-shadow: 0 4px 10px rgba(42,107,94,0.2);
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        text-decoration: none;
+    }
+
+/* ── Actions cell: centre the group ──────────────────────── */
+.tbl-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGINATION
+   ══════════════════════════════════════════════════════════════ */
+
+div.dataTables_wrapper div.dataTables_paginate {
+    margin-top: 1.1rem;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.dataTables_paginate .paginate_button {
+    font-family: var(--font-body) !important;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem !important;
+    border-radius: 8px !important;
+    margin: 0 2px !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    color: var(--color-text-mid) !important;
+    cursor: pointer;
+    transition: background var(--transition), border-color var(--transition), color var(--transition) !important;
+}
+
+    .dataTables_paginate .paginate_button:hover:not(.disabled) {
+        background: var(--color-primary-pale) !important;
+        border-color: var(--color-primary) !important;
+        color: var(--color-primary) !important;
+        box-shadow: none !important;
+    }
+
+    .dataTables_paginate .paginate_button.current,
+    .dataTables_paginate .paginate_button.current:hover {
+        background: var(--color-primary) !important;
+        border-color: var(--color-primary) !important;
+        color: #fff !important;
+        box-shadow: 0 3px 10px rgba(42,107,94,0.25) !important;
+    }
+
+    .dataTables_paginate .paginate_button.disabled,
+    .dataTables_paginate .paginate_button.disabled:hover {
+        opacity: 0.35;
+        cursor: default;
+    }
+
+/* Bootstrap pagination override */
+.page-item.active .page-link {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.page-link {
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    border-radius: 8px !important;
+    margin: 0 2px;
+    transition: background var(--transition), color var(--transition);
+}
+
+    .page-link:hover {
+        background: var(--color-primary-pale);
+        color: var(--color-primary);
+    }
+
+/* ══════════════════════════════════════════════════════════════
+   INFO TEXT  ("Showing 1 to 10 of 25 entries")
+   ══════════════════════════════════════════════════════════════ */
+
+.dataTables_info,
+div.dataTables_wrapper div.dataTables_info {
+    font-family: var(--font-body);
+    font-size: 0.775rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    letter-spacing: 0.02em;
+    padding-top: 1.2rem;
+    float: left;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ══════════════════════════════════════════════════════════════ */
+
+table.dataTable tbody td.dataTables_empty {
+    padding: 3rem 1rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .page-card__body {
+        padding: 1.1rem;
+    }
+
+    .page-card__header {
+        padding: 1.1rem 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .page-card__title {
+        font-size: 1.2rem;
+    }
+
+    .dataTables_filter input {
+        width: 160px !important;
+    }
+
+    table.dataTable thead th,
+    table.dataTable tbody td {
+        padding: 0.7rem 0.6rem;
+        font-size: 0.8rem;
+    }
+}

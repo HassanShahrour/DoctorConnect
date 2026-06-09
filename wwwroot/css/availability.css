@@ -1,0 +1,401 @@
+﻿:root {
+    --color-surface: #ffffff;
+    --color-surface-2: #faf9f7;
+    --color-border: #e8e4dd;
+    --color-border-light: #f0ede8;
+    --color-primary: #2a6b5e;
+    --color-primary-mid: #3d8b7a;
+    --color-primary-pale: #e8f4f1;
+    --color-accent: #c8854c;
+    --color-accent-pale: #fdf0e6;
+    --color-text: #1e2622;
+    --color-text-mid: #4a5550;
+    --color-text-muted: #8a9490;
+    --color-danger: #e06c5a;
+    --color-danger-pale: #fef3f0;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    --radius-card: 4px;
+    --radius-pill: 100px;
+    --radius-sm: 6px;
+    --transition: 0.18s ease;
+}
+
+/* ── Header badge ─────────────────────────────────────────── */
+.avf-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.22);
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+}
+
+/* ── Form wrapper ─────────────────────────────────────────── */
+.avf-form {
+    font-family: var(--font-body);
+}
+
+/* ── Scrollable table container ───────────────────────────── */
+.avf-table-wrap {
+    overflow-x: auto;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 6px rgba(42,107,94,0.05);
+}
+
+/* ── Table ────────────────────────────────────────────────── */
+.avf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+    /* ── Head ─────────────────────────────────────────────────── */
+    .avf-table thead tr {
+        background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);
+    }
+
+    .avf-table thead th {
+        font-family: var(--font-body);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.88);
+        padding: 1rem 1.25rem;
+        border: none;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+        .avf-table thead th small {
+            font-size: 0.6rem;
+            opacity: 0.65;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+    /* Col widths */
+    .avf-table .col-day {
+        text-align: left;
+        width: 160px;
+    }
+
+    .avf-table .col-avail {
+        width: 110px;
+    }
+
+    .avf-table .col-time {
+        width: 160px;
+    }
+
+    .avf-table .col-dur {
+        width: 160px;
+    }
+
+/* ── Body rows ────────────────────────────────────────────── */
+.avf-row {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border-light);
+    transition: background var(--transition);
+}
+
+    .avf-row:last-child {
+        border-bottom: none;
+    }
+
+    .avf-row:nth-child(even) {
+        background: var(--color-surface-2);
+    }
+
+    .avf-row:hover {
+        background: var(--color-primary-pale);
+    }
+
+/* Dimmed / off state */
+.avf-row--off {
+    opacity: 0.45;
+    pointer-events: none; /* prevent interaction on off rows */
+}
+
+    /* Re-enable the toggle even when row is dimmed */
+    .avf-row--off .avf-cell--avail {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+/* ── Cells ────────────────────────────────────────────────── */
+.avf-cell {
+    padding: 0.85rem 1.25rem;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+}
+
+.avf-cell--day {
+    text-align: left;
+}
+
+/* ── Day pill ─────────────────────────────────────────────── */
+.avf-day-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.avf-day-abbr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--color-primary-pale);
+    color: var(--color-primary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+
+.avf-day-full {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+/* ── Toggle switch ────────────────────────────────────────── */
+.avf-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.avf-toggle__input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.avf-toggle__track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 24px;
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
+    transition: background var(--transition), border-color var(--transition);
+    flex-shrink: 0;
+}
+
+.avf-toggle__thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Checked state */
+.avf-toggle__input:checked ~ .avf-toggle__track {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+    .avf-toggle__input:checked ~ .avf-toggle__track .avf-toggle__thumb {
+        transform: translateX(20px);
+    }
+
+/* Focus ring */
+.avf-toggle__input:focus-visible ~ .avf-toggle__track {
+    box-shadow: 0 0 0 3px rgba(42,107,94,0.2);
+}
+
+/* Labels "On" / "Off" */
+.avf-toggle__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: opacity var(--transition);
+}
+
+    .avf-toggle__label.on {
+        color: var(--color-primary);
+        display: none;
+    }
+
+    .avf-toggle__label.off {
+        color: var(--color-text-muted);
+    }
+
+.avf-toggle__input:checked ~ .avf-toggle__track ~ .avf-toggle__label.on {
+    display: inline;
+}
+
+.avf-toggle__input:checked ~ .avf-toggle__track ~ .avf-toggle__label.off {
+    display: none;
+}
+
+/* ── Input wrapper ────────────────────────────────────────── */
+.avf-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.avf-input-icon {
+    position: absolute;
+    left: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.avf-input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem 0.5rem 2.1rem;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+    .avf-input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(42,107,94,0.1);
+    }
+
+/* Number input (duration) — no left icon */
+.avf-cell--dur .avf-input {
+    padding-left: 0.75rem;
+    padding-right: 2.5rem;
+    text-align: right;
+}
+
+/* Suffix "min" label */
+.avf-input-wrap--suffix {
+    position: relative;
+}
+
+.avf-input-suffix {
+    position: absolute;
+    right: 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    pointer-events: none;
+}
+
+/* Hide browser number spinners */
+.avf-input[type="number"]::-webkit-inner-spin-button,
+.avf-input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+.avf-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.avf-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border-light);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.avf-hint {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    max-width: 500px;
+}
+
+    .avf-hint .fa {
+        color: var(--color-primary-mid);
+        flex-shrink: 0;
+    }
+
+/* ── Submit button ────────────────────────────────────────── */
+.avf-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.65rem 1.75rem;
+    border-radius: var(--radius-pill);
+    border: none;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+    box-shadow: 0 4px 14px rgba(42,107,94,0.28);
+    white-space: nowrap;
+}
+
+    .avf-submit:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(42,107,94,0.32);
+    }
+
+    .avf-submit:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(42,107,94,0.2);
+    }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .avf-cell {
+        padding: 0.7rem 0.75rem;
+    }
+
+    .avf-day-full {
+        display: none;
+    }
+
+    .avf-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .avf-submit {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,124 @@
+﻿@using DoctorConnect.ViewModels
+@model DoctorAvailabilityViewModel
+
+@{
+    ViewData["Title"] = "Doctor Availability";
+}
+
+<link rel="stylesheet" href="~/css/availability.css" />
+
+<div class="content-page">
+    <div class="page-card">
+        <div class="page-card__header">
+            <h1 class="page-card__title">Doctor <em>Availability</em></h1>
+            <span class="avf-header-badge">
+                <i class="fa fa-clock"></i> Weekly Schedule
+            </span>
+        </div>
+        <div class="page-card__body">
+            <form asp-action="SaveAvailability" method="post" class="avf-form">
+                <input asp-for="DoctorId" type="hidden" />
+
+                <div class="avf-table-wrap">
+                    <table class="avf-table">
+                        <thead>
+                            <tr>
+                                <th class="col-day">Day</th>
+                                <th class="col-avail">Available</th>
+                                <th class="col-time">From</th>
+                                <th class="col-time">To</th>
+                                <th class="col-dur">Duration&nbsp;<small>(min)</small></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Days.Count; i++)
+                            {
+                                <tr class="avf-row" data-row="@i">
+                                    <td class="avf-cell avf-cell--day">
+                                        <div class="avf-day-pill">
+                                            <span class="avf-day-abbr">
+                                                @Model.Days[i].DayOfWeek.ToString().Substring(0, 3).ToUpper()
+                                            </span>
+                                            <span class="avf-day-full">@Model.Days[i].DayOfWeek</span>
+                                        </div>
+                                        <input asp-for="Days[i].DayOfWeek" type="hidden" />
+                                    </td>
+
+                                    <td class="avf-cell avf-cell--avail">
+                                        <label class="avf-toggle">
+                                            <input asp-for="Days[i].IsAvailable"
+                                                   type="checkbox"
+                                                   class="avf-toggle__input availability-checkbox" />
+                                            <span class="avf-toggle__track">
+                                                <span class="avf-toggle__thumb"></span>
+                                            </span>
+                                            <span class="avf-toggle__label on">On</span>
+                                            <span class="avf-toggle__label off">Off</span>
+                                        </label>
+                                    </td>
+
+                                    <td class="avf-cell avf-cell--time">
+                                        <div class="avf-input-wrap">
+                                            <i class="fa fa-sun avf-input-icon"></i>
+                                            <input asp-for="Days[i].StartTime"
+                                                   type="time"
+                                                   class="avf-input" />
+                                        </div>
+                                    </td>
+
+                                    <td class="avf-cell avf-cell--time">
+                                        <div class="avf-input-wrap">
+                                            <i class="fa fa-moon avf-input-icon"></i>
+                                            <input asp-for="Days[i].EndTime"
+                                                   type="time"
+                                                   class="avf-input" />
+                                        </div>
+                                    </td>
+
+                                    <td class="avf-cell avf-cell--dur">
+                                        <div class="avf-input-wrap avf-input-wrap--suffix">
+                                            <input asp-for="Days[i].DurationInMinutes"
+                                                   type="number"
+                                                   min="5"
+                                                   step="5"
+                                                   class="avf-input"
+                                                   placeholder="30" />
+                                            <span class="avf-input-suffix">min</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="avf-footer">
+                    <p class="avf-hint">
+                        <i class="fa fa-circle-info"></i>
+                        Toggle each day on or off, then set working hours and appointment slot duration.
+                    </p>
+                    <button type="submit" class="avf-submit">
+                        <i class="fa fa-floppy-disk"></i> Save Availability
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            function syncRow(checkbox) {
+                const row = checkbox.closest('.avf-row');
+                if (!row) return;
+                row.classList.toggle('avf-row--off', !checkbox.checked);
+            }
+
+            document.querySelectorAll('.availability-checkbox').forEach(cb => {
+                syncRow(cb);
+                cb.addEventListener('change', () => syncRow(cb));
+            });
+        })();
+    </script>
+}

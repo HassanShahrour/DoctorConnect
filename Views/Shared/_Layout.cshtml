@@ -1,0 +1,190 @@
+﻿@{
+    var user = User.Identity?.Name;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="icon" type="image" href="~/doctorConnect_logo.png" />
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.css">
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.css">
+    <link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.css">
+    <link rel="stylesheet" href="~/plugins/sweetalert2/sweetalert2.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DoctorConnect.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/tables.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body id="body-pd">
+    <header class="header" id="header">
+        <div class="header_toggle"> <i class='fa fa-bars' id="header-toggle"></i> </div>
+    </header>
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div>
+                <a href="#" class="nav_logo">
+                    <img src="~/icon_transperant.png" class="nav_logo-icon" />
+                </a>
+                <div class="nav_list">
+                    <a asp-controller="Home" asp-action="Index" class="nav_link active">
+                        <i class="fas fa-home nav_icon"></i>
+                        <span class="nav_name">Home</span>
+                    </a>
+
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <a asp-controller="Doctors" asp-action="Index" class="nav_link">
+                            <i class="fas fa-user-md nav_icon"></i>
+                            <span class="nav_name">Doctors</span>
+                        </a>
+
+                        <a asp-controller="Clinics" asp-action="Index" class="nav_link">
+                            <i class="fas fa-hospital nav_icon"></i>
+                            <span class="nav_name">Clinics</span>
+                        </a>
+
+                        <a asp-controller="Specialities" asp-action="Index" class="nav_link">
+                            <i class="fas fa-stethoscope nav_icon"></i>
+                            <span class="nav_name">Specialities</span>
+                        </a>
+                    }
+                </div>
+            </div>
+            <partial name="_LoginPartial" />
+        </nav>
+    </div>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+        <footer class="border-top footer text-muted">
+            &copy; 2026 - DoctorConnect - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </footer>
+    </div>
+
+    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hassanshahrour04@gmail.com" class="floating-email-btn" title="Send me an email">
+        <i class="fas fa-envelope"></i>
+    </a>
+
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/navbar.js" asp-append-version="true"></script>
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+
+    <script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+
+    <script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+
+    <script src="~/plugins/sweetalert2/sweetalert2.all.js"></script>
+    <script src="~/js/datatable.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        <partial name="_ValidationScriptsPartial" />
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '@TempData["Success"]',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: '@TempData["Error"]',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                </text>
+        }
+    </script>
+    <script>
+        document.addEventListener("click", function (e) {
+            const btn = e.target.closest(".ajax-delete");
+            if (!btn) return;
+
+            e.preventDefault();
+
+            const id = btn.dataset.id;
+            const url = btn.dataset.url;
+
+            if (!url) {
+                console.error("Delete URL not provided");
+                return;
+            }
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "RequestVerificationToken":
+                            document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: new URLSearchParams({
+                        id: id
+                    })
+                })
+                .then(res => {
+                    if (res.ok) {
+                        btn.closest("tr")?.remove();
+
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Record has been deleted.",
+                            icon: "success",
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire("Error", "Delete failed", "error");
+                    }
+                })
+                .catch(() => {
+                    Swal.fire("Error", "Something went wrong", "error");
+                });
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

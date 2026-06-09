@@ -1,0 +1,37 @@
+@model DoctorConnect.Models.MedicalRecord
+
+@{
+    ViewData["Title"] = "Create Medical Record";
+}
+
+<h1>Create Medical Record</h1>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label">Patient</label>
+        <select asp-for="PatientId" class="form-select" asp-items="@(new SelectList(ViewBag.Patients, "Id", "FirstName"))"></select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Doctor</label>
+        <select asp-for="DoctorId" class="form-select" asp-items="@(new SelectList(ViewBag.Doctors, "Id", "FirstName"))"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Diagnosis" class="form-label"></label>
+        <input asp-for="Diagnosis" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Prescription" class="form-label"></label>
+        <textarea asp-for="Prescription" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="VisitDate" class="form-label"></label>
+        <input asp-for="VisitDate" class="form-control" type="date" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,22 @@
+@model dynamic
+
+@{
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<h1>Patient Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Upcoming Appointments</h5>
+            <h3>@Model.UpcomingAppointments</h3>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Appointment History</h5>
+            <h3>@Model.AppointmentHistory</h3>
+        </div>
+    </div>
+</div>

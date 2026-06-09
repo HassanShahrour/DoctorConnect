@@ -1,0 +1,45 @@
+@model IEnumerable<DoctorConnect.Models.Notification>
+
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<h1>Notifications</h1>
+
+<table class="table table-striped" id="notifTable">
+    <thead>
+        <tr>
+            <th>Message</th>
+            <th>Created</th>
+            <th>Read</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr>
+                <td>@n.Message</td>
+                <td>@n.CreatedAt</td>
+                <td>@n.IsRead</td>
+                <td>
+                    @if (!n.IsRead)
+                    {
+                        <form asp-action="MarkAsRead" method="post" style="display:inline">
+                            <input type="hidden" name="id" value="@n.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary">Mark as read</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#notifTable').DataTable();
+        });
+    </script>
+}

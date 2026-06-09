@@ -1,0 +1,206 @@
+@model DoctorConnect.ViewModels.CreateDoctorViewModel
+
+@{
+    ViewData["Title"] = "Create Doctor";
+}
+
+<link rel="stylesheet" href="~/css/doctor-form.css" />
+
+<div class="content-page">
+    <div class="page-card">
+        <div class="page-card__body">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+                <div class="df-section">
+                    <div class="df-section__label">
+                        <i class="fa fa-circle-user"></i> Personal Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="FirstName" class="df-label"></label>
+                                <input asp-for="FirstName" class="df-control" />
+                                <span asp-validation-for="FirstName" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="LastName" class="df-label"></label>
+                                <input asp-for="LastName" class="df-control" />
+                                <span asp-validation-for="LastName" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="Gender" class="df-label"></label>
+                                <select asp-for="Gender" class="df-control">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="DateOfBirth" class="df-label"></label>
+                                <input asp-for="DateOfBirth" type="date" class="df-control" />
+                                <span asp-validation-for="DateOfBirth" class="df-validation"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="df-section">
+                    <div class="df-section__label">
+                        <i class="fa fa-address-book"></i> Contact Details
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="Email" class="df-label"></label>
+                                <input asp-for="Email" class="df-control" />
+                                <span asp-validation-for="Email" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="PhoneNumber" class="df-label"></label>
+                                <input asp-for="PhoneNumber" class="df-control" />
+                                <span asp-validation-for="PhoneNumber" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="df-field">
+                                <label asp-for="Address" class="df-label"></label>
+                                <textarea asp-for="Address" rows="2" class="df-control"></textarea>
+                                <span asp-validation-for="Address" class="df-validation"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="df-section">
+                    <div class="df-section__label">
+                        <i class="fa fa-stethoscope"></i> Professional Details
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="SpecialtyId" class="df-label">Specialty</label>
+                                <select asp-for="SpecialtyId" asp-items="Model.Specialities" class="df-control">
+                                    <option value="">Select Specialty</option>
+                                </select>
+                                <span asp-validation-for="SpecialtyId" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="ClinicId" class="df-label">Clinic</label>
+                                <select asp-for="ClinicId" asp-items="Model.Clinics" class="df-control">
+                                    <option value="">Select Clinic</option>
+                                </select>
+                                <span asp-validation-for="ClinicId" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="YearsOfExperience" class="df-label"></label>
+                                <input asp-for="YearsOfExperience" class="df-control" />
+                                <span asp-validation-for="YearsOfExperience" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="ConsultationFee" class="df-label"></label>
+                                <input asp-for="ConsultationFee" class="df-control" />
+                                <span asp-validation-for="ConsultationFee" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="df-field">
+                                <label asp-for="Qualifications" class="df-label"></label>
+                                <textarea asp-for="Qualifications" class="df-control"></textarea>
+                                <span asp-validation-for="Qualifications" class="df-validation"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="df-field">
+                                <label asp-for="Biography" class="df-label"></label>
+                                <textarea asp-for="Biography" rows="4" class="df-control"></textarea>
+                                <span asp-validation-for="Biography" class="df-validation"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="df-section">
+                    <div class="df-section__label">
+                        <i class="fa fa-image"></i> Photo & Status
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label asp-for="ProfilePhoto" class="df-label"></label>
+                                <div class="df-photo-wrap">
+                                    <div class="df-photo-preview" id="photoPreview">
+                                        <i class="fa fa-camera"></i>
+                                    </div>
+                                    <div class="df-photo-inner">
+                                        <input asp-for="ProfilePhoto" type="file" accept="image/*"
+                                               class="df-control" id="photoInput" />
+                                        <span asp-validation-for="ProfilePhoto" class="df-validation"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="df-field">
+                                <label class="df-label">Status</label>
+                                <div class="df-toggle-wrap">
+                                    <label class="df-toggle">
+                                        <input asp-for="IsActive" type="checkbox" class="df-toggle__input" />
+                                        <span class="df-toggle__track">
+                                            <span class="df-toggle__thumb"></span>
+                                        </span>
+                                        <span class="df-toggle__text">Active Doctor</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="df-footer">
+                    <a asp-action="Index" class="df-btn-back">
+                        <i class="fa fa-arrow-left"></i> Back
+                    </a>
+                    <button type="submit" class="df-btn-save">
+                        <i class="fa fa-floppy-disk"></i> Create Doctor
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const input   = document.getElementById('photoInput');
+            const preview = document.getElementById('photoPreview');
+            if (!input || !preview) return;
+            input.addEventListener('change', function () {
+                const file = this.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview" />';
+                };
+                reader.readAsDataURL(file);
+            });
+        })();
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

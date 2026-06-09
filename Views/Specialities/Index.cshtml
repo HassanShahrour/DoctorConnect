@@ -1,0 +1,115 @@
+﻿@model IEnumerable<DoctorConnect.Models.Specialty>
+
+@{
+    ViewData["Title"] = "Specialties";
+    var counter = 1;
+}
+
+<div class="content-page">
+    <div class="page-card">
+        <div class="page-card__header">
+            <h1 class="page-card__title">Specialties</h1>
+            <button class="btn-create" data-bs-toggle="modal" data-bs-target="#createModal">
+                <i class="fa fa-plus"></i> New Specialty
+            </button>
+        </div>
+        <div class="page-card__body">
+            <table class="table table-striped datatable" id="specialitiesTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@s.Name</td>
+                            <td>
+                                <div class="tbl-actions">
+                                    <a href="#" class="tbl-action"
+                                       data-id="@s.Id"
+                                       data-name="@s.Name"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#editModal">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="tbl-action ajax-delete" data-id="@s.Id" data-url="/Specialities/Delete" title="Delete">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Create" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Specialty</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input name="Name" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Edit" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Specialty</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="editId" name="Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input id="editName" name="Name" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                document.getElementById('editId').value = this.dataset.id;
+                document.getElementById('editName').value = this.dataset.name;
+            });
+        });
+    </script>
+}

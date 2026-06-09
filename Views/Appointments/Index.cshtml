@@ -1,0 +1,325 @@
+﻿@model IEnumerable<DoctorConnect.Models.DoctorAvailability>
+
+@{
+    ViewData["Title"] = "Availabilities";
+    var doctorId = ViewBag.DoctorId as string;
+
+    var availabilitiesForJs = Model.Select(a => new
+    {
+        a.Id,
+        a.DoctorId,
+        DayOfWeek = (int)a.DayOfWeek,
+        StartTime = a.StartTime.ToString(),
+        EndTime = a.EndTime.ToString(),
+        a.IsAvailable,
+        DoctorName = a.Doctor?.User != null
+            ? a.Doctor.User.FirstName + " " + a.Doctor.User.LastName
+            : string.Empty
+    });
+    var availJson = System.Text.Json.JsonSerializer.Serialize(availabilitiesForJs);
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="~/css/availabilities.css" />
+
+<div class="content-page">
+    <div class="avail-card">
+
+        <header class="avail-card__header">
+            <h1 class="avail-card__title">
+                Availability <span>Calendar</span>
+            </h1>
+            @if (!string.IsNullOrEmpty(doctorId))
+            {
+                <span class="avail-card__meta">Doctor&nbsp;ID:&nbsp;@doctorId</span>
+            }
+        </header>
+
+        <div class="avail-card__body">
+
+            <section class="cal-panel" aria-label="Monthly calendar">
+
+                <nav class="cal-nav">
+                    <div class="cal-nav__controls">
+                        <button id="prevBtn" class="btn-icon" aria-label="Previous month">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <button id="nextBtn" class="btn-icon" aria-label="Next month">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <strong id="monthLabel" class="cal-nav__month"></strong>
+                    <button id="todayBtn" class="btn-today">Today</button>
+                </nav>
+
+                <div class="cal-weekdays" role="row">
+                    <div class="cal-weekday is-weekend">Sun</div>
+                    <div class="cal-weekday">Mon</div>
+                    <div class="cal-weekday">Tue</div>
+                    <div class="cal-weekday">Wed</div>
+                    <div class="cal-weekday">Thu</div>
+                    <div class="cal-weekday">Fri</div>
+                    <div class="cal-weekday is-weekend">Sat</div>
+                </div>
+
+                <div class="cal-days" id="daysGrid" role="grid"></div>
+            </section>
+
+            <aside id="sidebar" class="sidebar" aria-label="Day detail panel">
+                <div class="sidebar__inner">
+
+                    <div class="sidebar__header">
+                        <h2 id="selectedDateLabel" class="sidebar__date-label">Select a date</h2>
+                        <div class="sidebar__actions">
+                            <button id="addToggle" class="btn-add" title="Add availability">
+                                <i class="fa fa-plus"></i> Add
+                            </button>
+                            <button id="closeSidebar" class="btn-ghost" aria-label="Close panel">
+                                <i class="fa fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="availList" class="avail-list">
+                        <p class="avail-empty">No date selected.</p>
+                    </div>
+
+                    <div id="addSection" class="add-form-section">
+                        <h3 class="add-form-section__title">New Availability</h3>
+
+                        <form asp-action="Create" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="DoctorId" id="formDoctorId" value="@doctorId" />
+                            <input type="hidden" name="DayOfWeek" id="formDay" />
+
+                            <div class="form-group">
+                                <label class="form-label" for="formStart">Start Time</label>
+                                <input name="StartTime" id="formStart" type="time"
+                                       class="form-control" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="formEnd">End Time</label>
+                                <input name="EndTime" id="formEnd" type="time"
+                                       class="form-control" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-check">
+                                    <input name="IsAvailable" id="formAvail"
+                                           type="checkbox" checked />
+                                    <span class="form-check-label">Mark as Available</span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-submit">Save</button>
+                                <button type="button" id="cancelAdd" class="btn-cancel">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+
+            /* ── Data from server ─────────────────────────────── */
+            const availabilities = @Html.Raw(availJson);
+            const currentDoctorId = '@doctorId';
+
+            /* ── State ────────────────────────────────────────── */
+            const today = new Date();
+            let currentYear  = today.getFullYear();
+            let currentMonth = today.getMonth();   // 0-indexed
+            let selectedCell = null;
+
+            /* ── Elements ─────────────────────────────────────── */
+            const monthLabel       = document.getElementById('monthLabel');
+            const daysGrid         = document.getElementById('daysGrid');
+            const sidebar          = document.getElementById('sidebar');
+            const availList        = document.getElementById('availList');
+            const selectedDateLabel= document.getElementById('selectedDateLabel');
+            const addToggle        = document.getElementById('addToggle');
+            const addSection       = document.getElementById('addSection');
+            const cancelAdd        = document.getElementById('cancelAdd');
+            const formDay          = document.getElementById('formDay');
+            const formDoctorId     = document.getElementById('formDoctorId');
+
+            /* ── Helpers ──────────────────────────────────────── */
+            const fmt = (date, opts) =>
+                new Intl.DateTimeFormat('en', opts).format(date);
+
+            /** Return availabilities matching a given day-of-week (0=Sun … 6=Sat). */
+            function getSlots(dow) {
+                let list = availabilities.filter(a => a.DayOfWeek === dow);
+                if (currentDoctorId) {
+                    list = list.filter(a => a.DoctorId === currentDoctorId);
+                }
+                return list;
+            }
+
+            /** Build dot indicators for a cell. */
+            function buildDots(dow) {
+                const slots = getSlots(dow);
+                if (!slots.length) return null;
+                const wrap = document.createElement('div');
+                wrap.className = 'day-dots';
+                slots.slice(0, 5).forEach(s => {
+                    const dot = document.createElement('span');
+                    dot.className = 'day-dot' + (s.IsAvailable ? '' : ' day-dot--unavail');
+                    wrap.appendChild(dot);
+                });
+                return wrap;
+            }
+
+            /* ── Render Month ─────────────────────────────────── */
+            function renderMonth(year, month) {
+                monthLabel.textContent = fmt(new Date(year, month, 1), {
+                    month: 'long', year: 'numeric'
+                });
+                daysGrid.innerHTML = '';
+
+                const firstDow   = new Date(year, month, 1).getDay();
+                const daysInMonth= new Date(year, month + 1, 0).getDate();
+                const todayStamp = today.toDateString();
+
+                /* Leading blank cells */
+                for (let i = 0; i < firstDow; i++) {
+                    const blank = document.createElement('div');
+                    blank.className = 'day-cell day-cell--disabled';
+                    daysGrid.appendChild(blank);
+                }
+
+                /* Day cells */
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const date = new Date(year, month, d);
+                    const dow  = date.getDay();
+                    const isToday   = date.toDateString() === todayStamp;
+                    const isWeekend = dow === 0 || dow === 6;
+
+                    const cell = document.createElement('div');
+                    cell.className = [
+                        'day-cell',
+                        isToday   ? 'day-cell--today'   : '',
+                        isWeekend ? 'day-cell--weekend'  : ''
+                    ].filter(Boolean).join(' ');
+                    cell.setAttribute('role', 'gridcell');
+                    cell.setAttribute('aria-label', fmt(date, { month: 'long', day: 'numeric', year: 'numeric' }));
+
+                    const num = document.createElement('div');
+                    num.className = 'day-number';
+                    num.textContent = d;
+                    cell.appendChild(num);
+
+                    const dots = buildDots(dow);
+                    if (dots) cell.appendChild(dots);
+
+                    cell.addEventListener('click', () => openSidebar(date, dow, cell));
+                    daysGrid.appendChild(cell);
+                }
+            }
+
+            /* ── Open Sidebar ─────────────────────────────────── */
+            function openSidebar(date, dow, cell) {
+                /* Highlight selected cell */
+                if (selectedCell) selectedCell.classList.remove('day-cell--selected');
+                selectedCell = cell;
+                cell.classList.add('day-cell--selected');
+
+                /* Heading */
+                selectedDateLabel.textContent = fmt(date, {
+                    weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
+                });
+
+                /* Build list */
+                const slots = getSlots(dow);
+                availList.innerHTML = '';
+
+                if (!slots.length) {
+                    const p = document.createElement('p');
+                    p.className = 'avail-empty';
+                    p.textContent = 'No availabilities for this day.';
+                    availList.appendChild(p);
+                } else {
+                    slots.forEach((a, i) => {
+                        const item = document.createElement('div');
+                        item.className = 'avail-item' + (a.IsAvailable ? '' : ' avail-item--unavail');
+                        item.style.animationDelay = (i * 0.05) + 's';
+
+                        const name = document.createElement('div');
+                        name.className = 'avail-item__name';
+                        name.textContent = a.DoctorName || a.DoctorId || 'Unknown Doctor';
+
+                        const times = document.createElement('div');
+                        times.className = 'avail-item__time';
+                        times.textContent = a.StartTime + ' – ' + a.EndTime;
+
+                        const badge = document.createElement('span');
+                        badge.className = 'avail-item__badge ' +
+                            (a.IsAvailable ? 'avail-item__badge--avail' : 'avail-item__badge--unavail');
+                        badge.textContent = a.IsAvailable ? 'Available' : 'Unavailable';
+                        times.appendChild(badge);
+
+                        item.appendChild(name);
+                        item.appendChild(times);
+                        availList.appendChild(item);
+                    });
+                }
+
+                /* Reset add form */
+                formDay.value = dow;
+                formDoctorId.value = currentDoctorId || '';
+                addSection.classList.remove('is-open');
+
+                sidebar.classList.add('is-open');
+            }
+
+            /* ── Sidebar Controls ─────────────────────────────── */
+            addToggle.addEventListener('click', () =>
+                addSection.classList.toggle('is-open')
+            );
+
+            cancelAdd.addEventListener('click', () =>
+                addSection.classList.remove('is-open')
+            );
+
+            document.getElementById('closeSidebar').addEventListener('click', () => {
+                sidebar.classList.remove('is-open');
+                addSection.classList.remove('is-open');
+                if (selectedCell) {
+                    selectedCell.classList.remove('day-cell--selected');
+                    selectedCell = null;
+                }
+            });
+
+            /* ── Month Navigation ─────────────────────────────── */
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                if (--currentMonth < 0) { currentMonth = 11; currentYear--; }
+                renderMonth(currentYear, currentMonth);
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (++currentMonth > 11) { currentMonth = 0; currentYear++; }
+                renderMonth(currentYear, currentMonth);
+            });
+
+            document.getElementById('todayBtn').addEventListener('click', () => {
+                currentYear  = today.getFullYear();
+                currentMonth = today.getMonth();
+                renderMonth(currentYear, currentMonth);
+            });
+
+            /* ── Initial Render ───────────────────────────────── */
+            renderMonth(currentYear, currentMonth);
+
+        })();
+    </script>
+}

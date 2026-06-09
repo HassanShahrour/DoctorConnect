@@ -1,0 +1,383 @@
+﻿@model IEnumerable<DoctorConnect.Models.Clinic>
+
+@{
+    ViewData["Title"] = "Clinics";
+    var counter = 1;
+}
+
+<div class="content-page">
+    <div class="page-card">
+        <div class="page-card__header">
+            <h1 class="page-card__title">Clinics</h1>
+            <button class="btn-create" data-bs-toggle="modal" data-bs-target="#createModal">
+                <i class="fa fa-plus"></i> New Clinic
+            </button>
+        </div>
+        <div class="page-card__body">
+            <table class="table table-striped datatable" id="clinicsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@s.Name</td>
+                            <td>@s.PhoneNumber</td>
+                            <td>@s.Email</td>
+                            <td>
+                                <div class="tbl-actions">
+                                    <a href="#" class="tbl-action tbl-edit"
+                                       data-id="@s.Id"
+                                       data-name="@s.Name"
+                                       data-phonenumber="@s.PhoneNumber"
+                                       data-email="@s.Email"
+                                       data-address="@s.Address"
+                                       data-latitude="@s.Latitude"
+                                       data-longitude="@s.Longitude"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#editModal">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="tbl-action ajax-delete" data-id="@s.Id" data-url="/Clinics/Delete" title="Delete">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Create" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Clinic</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input name="Name" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input name="PhoneNumber" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input name="Email" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input name="Address" class="form-control" required />
+                    </div>
+
+                    <div class="row not-visible">
+                        <div class="col-md-6">
+                            <label class="form-label">Latitude</label>
+                            <input id="createLatitude"
+                                   name="Latitude"
+                                   class="form-control"
+                                   readonly />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Longitude</label>
+                            <input id="createLongitude"
+                                   name="Longitude"
+                                   class="form-control"
+                                   readonly />
+                        </div>
+                    </div>
+
+                    <div id="createMap"
+                         class="mt-3"
+                         style="height:400px;border-radius:10px;">
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="button"
+                                id="btnCurrentLocationCreate"
+                                class="btn btn-outline-primary">
+                            <i class="fas fa-location-arrow"></i>
+                            Use Current Location
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Edit" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Clinic</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="editId" name="Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input id="editName"
+                               name="Name"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input id="editPhoneNumber"
+                               name="PhoneNumber"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input id="editEmail"
+                               name="Email"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input id="editAddress"
+                               name="Address"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="row not-visible">
+                        <div class="col-md-6">
+                            <label class="form-label">Latitude</label>
+                            <input id="editLatitude"
+                                   name="Latitude"
+                                   class="form-control"
+                                   readonly />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Longitude</label>
+                            <input id="editLongitude"
+                                   name="Longitude"
+                                   class="form-control"
+                                   readonly />
+                        </div>
+                    </div>
+
+                    <div id="editMap"
+                         class="mt-3"
+                         style="height:400px;border-radius:10px;">
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="button"
+                                id="btnCurrentLocationEdit"
+                                class="btn btn-outline-primary">
+                            <i class="fas fa-location-arrow"></i>
+                            Use Current Location
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let createMap;
+        let createMarker;
+
+        let editMap;
+        let editMarker;
+
+        // CREATE MAP
+        $('#createModal').on('shown.bs.modal', function () {
+
+            if (!createMap) {
+
+                createMap = L.map('createMap')
+                    .setView([33.8938, 35.5018], 13);
+
+                L.tileLayer(
+                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    {
+                        maxZoom: 19
+                    }).addTo(createMap);
+
+                createMarker = L.marker(
+                    [33.8938, 35.5018],
+                    { draggable: true })
+                    .addTo(createMap);
+
+                updateCreateCoordinates(createMarker.getLatLng());
+
+                createMarker.on('dragend', function () {
+                    updateCreateCoordinates(createMarker.getLatLng());
+                });
+
+                createMap.on('click', function (e) {
+                    createMarker.setLatLng(e.latlng);
+                    updateCreateCoordinates(e.latlng);
+                });
+            }
+
+            createMap.invalidateSize();
+        });
+
+        function updateCreateCoordinates(pos) {
+            document.getElementById('createLatitude').value = pos.lat;
+            document.getElementById('createLongitude').value = pos.lng;
+        }
+
+        // EDIT MAP
+        $('#editModal').on('shown.bs.modal', function () {
+
+            const lat = parseFloat(
+                document.getElementById('editLatitude').value
+            ) || 33.8938;
+
+            const lng = parseFloat(
+                document.getElementById('editLongitude').value
+            ) || 35.5018;
+
+            if (!editMap) {
+
+                editMap = L.map('editMap')
+                    .setView([lat, lng], 13);
+
+                L.tileLayer(
+                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    {
+                        maxZoom: 19
+                    }).addTo(editMap);
+
+                editMarker = L.marker(
+                    [lat, lng],
+                    { draggable: true })
+                    .addTo(editMap);
+
+                editMarker.on('dragend', function () {
+
+                    const pos = editMarker.getLatLng();
+
+                    document.getElementById('editLatitude').value = pos.lat;
+                    document.getElementById('editLongitude').value = pos.lng;
+                });
+
+                editMap.on('click', function (e) {
+
+                    editMarker.setLatLng(e.latlng);
+
+                    document.getElementById('editLatitude').value = e.latlng.lat;
+                    document.getElementById('editLongitude').value = e.latlng.lng;
+                });
+            }
+            else {
+
+                editMap.setView([lat, lng], 13);
+                editMarker.setLatLng([lat, lng]);
+            }
+
+            editMap.invalidateSize();
+        });
+
+        // CURRENT LOCATION CREATE
+        document.getElementById('btnCurrentLocationCreate')
+            ?.addEventListener('click', function () {
+
+            navigator.geolocation.getCurrentPosition(function (pos) {
+
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+
+                createMap.setView([lat, lng], 16);
+                createMarker.setLatLng([lat, lng]);
+
+                document.getElementById('createLatitude').value = lat;
+                document.getElementById('createLongitude').value = lng;
+            });
+        });
+
+        // CURRENT LOCATION EDIT
+        document.getElementById('btnCurrentLocationEdit')
+            ?.addEventListener('click', function () {
+
+            navigator.geolocation.getCurrentPosition(function (pos) {
+
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+
+                editMap.setView([lat, lng], 16);
+                editMarker.setLatLng([lat, lng]);
+
+                document.getElementById('editLatitude').value = lat;
+                document.getElementById('editLongitude').value = lng;
+            });
+        });
+
+        // EDIT BUTTON
+        document.querySelectorAll('.tbl-edit')
+            .forEach(button => {
+
+            button.addEventListener('click', function () {
+
+                document.getElementById('editId').value =
+                    this.dataset.id;
+
+                document.getElementById('editName').value =
+                    this.dataset.name;
+
+                document.getElementById('editPhoneNumber').value =
+                    this.dataset.phonenumber;
+
+                document.getElementById('editEmail').value =
+                    this.dataset.email;
+
+                document.getElementById('editAddress').value =
+                    this.dataset.address;
+
+                document.getElementById('editLatitude').value =
+                    this.dataset.latitude;
+
+                document.getElementById('editLongitude').value =
+                    this.dataset.longitude;
+            });
+        });
+    </script>
+}

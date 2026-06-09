@@ -1,0 +1,137 @@
+@model IEnumerable<DoctorConnect.Models.MedicalRecord>
+
+@{
+    ViewData["Title"] = "Medical Records";
+}
+
+<h1>Medical Records</h1>
+
+<p>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRecordModal">Create New</button>
+</p>
+
+<table class="table table-striped datatable" id="recordsTable">
+    <thead>
+        <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Diagnosis</th>
+            <th>Visit Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Patient?.User.FirstName @r.Patient?.User.LastName</td>
+                <td>@r.Doctor?.User.FirstName @r.Doctor?.User.LastName</td>
+                <td>@r.Diagnosis</td>
+                <td>@r.VisitDate.ToShortDateString()</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editRecordModal" data-id="@r.Id" data-diagnosis="@r.Diagnosis" data-prescription="@r.Prescription" data-visit="@r.VisitDate.ToString("yyyy-MM-dd")">Edit</button>
+                    <form asp-action="Delete" method="post" class="d-inline ajax-delete">
+                        <input type="hidden" name="id" value="@r.Id" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createRecordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Create" method="post" class="ajax-form">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Medical Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Patient</label>
+                        <select name="PatientId" class="form-select">
+                            @foreach (var pat in ViewBag.Patients as IEnumerable<DoctorConnect.Models.Patient>)
+                            {
+                                <option value="@pat.UserId">@pat.User.FirstName @pat.User.LastName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Doctor</label>
+                        <select name="DoctorId" class="form-select">
+                            @foreach (var doc in ViewBag.Doctors as IEnumerable<DoctorConnect.Models.Doctor>)
+                            {
+                                <option value="@doc.UserId">@doc.User.FirstName @doc.User.LastName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Diagnosis</label>
+                        <input name="Diagnosis" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Prescription</label>
+                        <textarea name="Prescription" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Visit Date</label>
+                        <input name="VisitDate" type="date" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editRecordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Edit" method="post" class="ajax-form">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Medical Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="recordId" />
+                    <div class="mb-3">
+                        <label class="form-label">Diagnosis</label>
+                        <input name="Diagnosis" id="recordDiagnosis" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Prescription</label>
+                        <textarea name="Prescription" id="recordPrescription" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Visit Date</label>
+                        <input name="VisitDate" id="recordVisit" type="date" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var editRecordModal = document.getElementById('editRecordModal');
+        editRecordModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            $('#recordId').val(button.getAttribute('data-id'));
+            $('#recordDiagnosis').val(button.getAttribute('data-diagnosis'));
+            $('#recordPrescription').val(button.getAttribute('data-prescription'));
+            $('#recordVisit').val(button.getAttribute('data-visit'));
+        });
+    </script>
+}

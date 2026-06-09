@@ -1,0 +1,68 @@
+@model IEnumerable<DoctorConnect.Models.Doctor>
+
+@{
+    ViewData["Title"] = "Doctors";
+    var counter = 1;
+}
+
+<div class="content-page">
+    <div class="page-card">
+        <div class="page-card__header">
+            <h1 class="page-card__title">Doctors</h1>
+            <a class="btn-create" asp-action="Create">
+                <i class="fa fa-plus"></i> New Doctor
+            </a>
+        </div>
+        <div class="page-card__body">
+            <table class="table table-striped datatable" id="doctorsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Specialty</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@d.User.FirstName</td>
+                            <td>@d.User.LastName</td>
+                            <td>@d.User.Email</td>
+                            <td>@d.Specialty.Name</td>
+                            <td>
+                                <div class="tbl-actions">
+                                    <a class="tbl-action"
+                                       asp-controller="Availabilities"
+                                       asp-action="Availability"
+                                       asp-route-doctorId="@d.Id"
+                                       title="Manage Availability">
+                                        <i class="fa fa-calendar"></i>
+                                    </a>
+                                    <a class="tbl-action"
+                                       asp-action="Edit"
+                                       asp-route-id="@d.Id"
+                                       title="Edit">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a class="tbl-action ajax-delete"
+                                       href="#"
+                                       data-id="@d.Id"
+                                       data-url="/Doctors/Delete"
+                                       title="Delete">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
