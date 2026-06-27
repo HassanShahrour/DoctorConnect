@@ -103,7 +103,7 @@ namespace DoctorConnect.Controllers
                 ConsultationFee = doctor.ConsultationFee,
                 ProfilePhoto = doctor.ProfilePhoto,
                 IsActive = doctor.IsActive,
-                ClinicId = doctor.ClinicId,
+                ClinicIds = doctor.Clinics?.Select(c => c.Id).ToList(),
                 SpecialtyId = doctor.SpecialtyId,
                 Specialities = FetchSpecialities(),
                 Clinics = FetchClinics(),
@@ -126,6 +126,16 @@ namespace DoctorConnect.Controllers
         {
             await _doctorService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Appointments(string doctorId)
+        {
+            var appointments = await _doctorService.GetByIdAsync(doctorId);
+            var model = new AppointmentViewModel
+            {
+                Appointments = appointments?.Appointments ?? new List<DoctorConnect.Models.Appointment>()
+            };
+            return View("~/Views/Appointments/Index.cshtml", model);
         }
     }
 }

@@ -1,14 +1,18 @@
 ﻿namespace DoctorConnect.Models
 {
-    public class Enums
+    public enum AppointmentStatus
     {
-        public enum AppointmentStatus
-        {
-            Pending,
-            Approved,
-            Rejected,
-            Completed,
-            Cancelled
-        }
+        Pending = 1,
+        Confirmed = 2,
+        Completed = 3,
+        Cancelled = 4,
+        NoShow = 5
+    }
+
+    public enum Gender
+    {
+        Male = 1,
+        Female = 2,
+        Other = 3
     }
 }

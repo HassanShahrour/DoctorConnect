@@ -1,7 +1,6 @@
 using DoctorConnect.DbServices.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace DoctorConnect.Controllers
 {
@@ -16,15 +15,15 @@ namespace DoctorConnect.Controllers
         }
 
         [Authorize(Roles = "Admin,SuperAdmin")]
-        public async Task<IActionResult> Admin()
+        public IActionResult Admin()
         {
             var model = new
             {
-                TotalDoctors = await _dashboard.GetTotalDoctorsAsync(),
-                TotalPatients = await _dashboard.GetTotalPatientsAsync(),
-                TotalAppointments = await _dashboard.GetTotalAppointmentsAsync(),
-                CompletedAppointments = await _dashboard.GetCompletedAppointmentsAsync(),
-                PendingAppointments = await _dashboard.GetPendingAppointmentsAsync()
+                TotalDoctors = _dashboard.GetTotalDoctorsAsync().Result,
+                TotalPatients = _dashboard.GetTotalPatientsAsync().Result,
+                TotalAppointments = _dashboard.GetTotalAppointmentsAsync().Result,
+                CompletedAppointments = _dashboard.GetCompletedAppointmentsAsync().Result,
+                PendingAppointments = _dashboard.GetPendingAppointmentsAsync().Result
             };
             return View(model);
         }
@@ -32,7 +31,6 @@ namespace DoctorConnect.Controllers
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> Doctor()
         {
-            // Simple placeholders - services can be extended for doctor-specific stats
             var model = new
             {
                 TodaysAppointments = 0,

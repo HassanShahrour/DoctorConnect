@@ -30,6 +30,11 @@ namespace DoctorConnect.Repositories
             return await _dbSet.Where(predicate).ToListAsync();
         }
 
+        public async Task<T> FindSingleAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null)
         {
             IQueryable<T> query = _dbSet;

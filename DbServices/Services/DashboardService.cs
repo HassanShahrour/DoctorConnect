@@ -1,7 +1,6 @@
 using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using DoctorConnect.Repositories;
-using static DoctorConnect.Models.Enums;
 
 namespace DoctorConnect.DbServices.Services
 {

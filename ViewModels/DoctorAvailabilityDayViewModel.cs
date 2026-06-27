@@ -7,5 +7,12 @@
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
         public int DurationInMinutes { get; set; }
+        public List<BreakTimeViewModel> BreakTimes { get; set; } = new();
+    }
+
+    public class BreakTimeViewModel
+    {
+        public TimeSpan? Start { get; set; }
+        public TimeSpan? End { get; set; }
     }
 }

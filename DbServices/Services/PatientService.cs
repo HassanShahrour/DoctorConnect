@@ -44,5 +44,10 @@ namespace DoctorConnect.DbServices.Services
             await _repo.UpdateAsync(patient);
             await _repo.SaveChangesAsync();
         }
+
+        public async Task<Patient> GetPatientByUserId(string id)
+        {
+            return await _repo.FindSingleAsync(p => p.UserId == id);
+        }
     }
 }

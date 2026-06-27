@@ -9,5 +9,6 @@ namespace DoctorConnect.DbServices.IServices
         Task CreateAsync(Patient patient);
         Task UpdateAsync(Patient patient);
         Task DeleteAsync(string id);
+        Task<Patient> GetPatientByUserId(string id);
     }
 }

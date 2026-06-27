@@ -22,6 +22,21 @@ namespace DoctorConnect.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("ClinicDoctor", b =>
+                {
+                    b.Property<string>("ClinicsId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("DoctorsId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("ClinicsId", "DoctorsId");
+
+                    b.HasIndex("DoctorsId");
+
+                    b.ToTable("DoctorClinics", (string)null);
+                });
+
             modelBuilder.Entity("DoctorConnect.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -123,12 +138,28 @@ namespace DoctorConnect.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<decimal?>("Fees")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime?>("GuestPatientDateOfBirth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("GuestPatientFullName")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("GuestPatientGender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GuestPatientPhoneNumber")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsGuestPatient")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("PatientId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<int>("Status")
@@ -141,6 +172,31 @@ namespace DoctorConnect.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("DoctorConnect.Models.BreakTime", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DoctorAvailabilityId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<TimeSpan>("End")
+                        .HasColumnType("time(6)");
+
+                    b.Property<TimeSpan>("Start")
+                        .HasColumnType("time(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorAvailabilityId");
+
+                    b.ToTable("BreakTime");
                 });
 
             modelBuilder.Entity("DoctorConnect.Models.Clinic", b =>
@@ -158,6 +214,9 @@ namespace DoctorConnect.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<decimal?>("Latitude")
                         .HasColumnType("decimal(65,30)");
@@ -185,9 +244,6 @@ namespace DoctorConnect.Migrations
 
                     b.Property<string>("Biography")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("ClinicId")
-                        .HasColumnType("varchar(255)");
 
                     b.Property<decimal?>("ConsultationFee")
                         .HasColumnType("decimal(65,30)");
@@ -217,8 +273,6 @@ namespace DoctorConnect.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClinicId");
-
                     b.HasIndex("SpecialtyId");
 
                     b.HasIndex("UserId");
@@ -229,6 +283,10 @@ namespace DoctorConnect.Migrations
             modelBuilder.Entity("DoctorConnect.Models.DoctorAvailability", b =>
                 {
                     b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ClinicId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -254,6 +312,8 @@ namespace DoctorConnect.Migrations
                         .HasColumnType("time(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClinicId");
 
                     b.HasIndex("DoctorId");
 
@@ -526,31 +586,52 @@ namespace DoctorConnect.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ClinicDoctor", b =>
+                {
+                    b.HasOne("DoctorConnect.Models.Clinic", null)
+                        .WithMany()
+                        .HasForeignKey("ClinicsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DoctorConnect.Models.Doctor", null)
+                        .WithMany()
+                        .HasForeignKey("DoctorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DoctorConnect.Models.Appointment", b =>
                 {
                     b.HasOne("DoctorConnect.Models.Doctor", "Doctor")
                         .WithMany("Appointments")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DoctorConnect.Models.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("DoctorConnect.Models.BreakTime", b =>
+                {
+                    b.HasOne("DoctorConnect.Models.DoctorAvailability", "DoctorAvailability")
+                        .WithMany("BreakTimes")
+                        .HasForeignKey("DoctorAvailabilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DoctorAvailability");
+                });
+
             modelBuilder.Entity("DoctorConnect.Models.Doctor", b =>
                 {
-                    b.HasOne("DoctorConnect.Models.Clinic", "Clinic")
-                        .WithMany("Doctors")
-                        .HasForeignKey("ClinicId");
-
                     b.HasOne("DoctorConnect.Models.Specialty", "Specialty")
                         .WithMany()
                         .HasForeignKey("SpecialtyId")
@@ -563,8 +644,6 @@ namespace DoctorConnect.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Clinic");
-
                     b.Navigation("Specialty");
 
                     b.Navigation("User");
@@ -572,11 +651,19 @@ namespace DoctorConnect.Migrations
 
             modelBuilder.Entity("DoctorConnect.Models.DoctorAvailability", b =>
                 {
+                    b.HasOne("DoctorConnect.Models.Clinic", "Clinic")
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DoctorConnect.Models.Doctor", "Doctor")
                         .WithMany("Availabilities")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Clinic");
 
                     b.Navigation("Doctor");
                 });
@@ -685,11 +772,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("Notifications");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.Clinic", b =>
-                {
-                    b.Navigation("Doctors");
-                });
-
             modelBuilder.Entity("DoctorConnect.Models.Doctor", b =>
                 {
                     b.Navigation("Appointments");
@@ -697,6 +779,11 @@ namespace DoctorConnect.Migrations
                     b.Navigation("Availabilities");
 
                     b.Navigation("MedicalRecords");
+                });
+
+            modelBuilder.Entity("DoctorConnect.Models.DoctorAvailability", b =>
+                {
+                    b.Navigation("BreakTimes");
                 });
 
             modelBuilder.Entity("DoctorConnect.Models.MedicalRecord", b =>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace DoctorConnect.ViewModels
 {
@@ -12,7 +13,7 @@ namespace DoctorConnect.ViewModels
         public decimal? ConsultationFee { get; set; }
         public string? ProfilePhoto { get; set; }
         public bool IsActive { get; set; } = true;
-        public string? ClinicId { get; set; }
+        public List<string> ClinicIds { get; set; } = new(); // Multiple clinics
         public string SpecialtyId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

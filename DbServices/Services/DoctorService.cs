@@ -10,10 +10,12 @@ namespace DoctorConnect.DbServices.Services
     {
         private readonly IGenericRepository<Doctor> _repo;
         private readonly IGenericRepository<ApplicationUser> _accountRepo;
-        public DoctorService(IGenericRepository<Doctor> repo, IGenericRepository<ApplicationUser> accountRepo)
+        private readonly IGenericRepository<Clinic> _clinicRepo;
+        public DoctorService(IGenericRepository<Doctor> repo, IGenericRepository<ApplicationUser> accountRepo, IGenericRepository<Clinic> clinicRepo)
         {
             _repo = repo;
             _accountRepo = accountRepo;
+            _clinicRepo = clinicRepo;
         }
 
         public async Task CreateAsync(Doctor doctor)
@@ -40,22 +42,26 @@ namespace DoctorConnect.DbServices.Services
             return await _repo.GetAllAsync(q => q
                         .Include(d => d.User)
                         .Include(d => d.Specialty)
-                        .Include(d => d.Clinic));
+                        .Include(d => d.Clinics));
         }
 
         public async Task<Doctor> GetByIdAsync(string id)
         {
             return await _repo.GetByIdAsync(id, q => q
                         .Include(d => d.User)
+                        .Include(d => d.Availabilities)
+                        .Include(d => d.Appointments)
+                        .ThenInclude(a => a.Patient)
+                        .ThenInclude(p => p.User)
                         .Include(d => d.Specialty)
-                        .Include(d => d.Clinic));
+                        .Include(d => d.Clinics));
         }
 
         public async Task UpdateAsync(EditDoctorViewModel model)
         {
             await _repo.ExecuteInTransactionAsync(async () =>
             {
-                var doctor = await _repo.GetByIdAsync(model.Id);
+                var doctor = await _repo.GetByIdAsync(model.Id, q => q.Include(d => d.Clinics));
                 var user = await _accountRepo.GetByIdAsync(model.UserId);
 
                 if (doctor != null && user != null)
@@ -78,7 +84,18 @@ namespace DoctorConnect.DbServices.Services
                     doctor.ProfilePhoto = model.ProfilePhoto;
                     doctor.IsActive = model.IsActive;
                     doctor.SpecialtyId = model.SpecialtyId;
-                    doctor.ClinicId = model.ClinicId;
+
+                    // Update clinics
+                    doctor.Clinics.Clear();
+                    if (model.ClinicIds != null)
+                    {
+                        foreach (var clinicId in model.ClinicIds)
+                        {
+                            var clinic = await _clinicRepo.GetByIdAsync(clinicId);
+                            if (clinic != null)
+                                doctor.Clinics.Add(clinic);
+                        }
+                    }
 
                     await _repo.UpdateAsync(doctor);
                     await _accountRepo.UpdateAsync(user);

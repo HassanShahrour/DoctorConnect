@@ -23,6 +23,28 @@ namespace DoctorConnect.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Appointment>()
+               .HasOne(a => a.Doctor)
+               .WithMany(u => u.Appointments)
+               .HasForeignKey(a => a.DoctorId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Appointment>()
+                .HasOne(a => a.Patient)
+                .WithMany(u => u.Appointments)
+                .HasForeignKey(a => a.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Doctor>()
+                .HasMany(d => d.Clinics)
+                .WithMany(c => c.Doctors)
+                .UsingEntity(j => j.ToTable("DoctorClinics"));
+
+            builder.Entity<DoctorAvailability>()
+                .HasMany(da => da.BreakTimes)
+                .WithOne(bt => bt.DoctorAvailability)
+                .HasForeignKey(bt => bt.DoctorAvailabilityId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

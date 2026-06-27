@@ -8,6 +8,7 @@
         public decimal? Longitude { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
+        public bool IsActive { get; set; } = true;
         public List<Doctor> Doctors { get; set; }
     }
 }

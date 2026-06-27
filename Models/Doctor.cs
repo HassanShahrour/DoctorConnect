@@ -9,13 +9,12 @@ namespace DoctorConnect.Models
         public decimal? ConsultationFee { get; set; }
         public string? ProfilePhoto { get; set; }
         public bool IsActive { get; set; } = true;
-        public string? ClinicId { get; set; }
         public string SpecialtyId { get; set; }
         public ApplicationUser User { get; set; }
         public List<DoctorAvailability> Availabilities { get; set; }
         public List<Appointment> Appointments { get; set; }
         public List<MedicalRecord> MedicalRecords { get; set; }
-        public Clinic Clinic { get; set; }
+        public List<Clinic> Clinics { get; set; }
         public Specialty Specialty { get; set; }
     }
 }

@@ -1,8 +1,18 @@
 using DoctorConnect.Extensions;
 using DoctorConnect.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var architecture = RuntimeInformation.ProcessArchitecture.ToString().ToLower();
+var wkhtmltoxPath = Path.Combine(Directory.GetCurrentDirectory(), "Libraries", "libwkhtmltox.dll");
+
+if (File.Exists(wkhtmltoxPath))
+{
+    var context = new CustomAssemblyLoadContext();
+    context.LoadUnmanagedLibrary(wkhtmltoxPath);
+}
 
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddInterfaceScopeServices(builder.Configuration);
@@ -67,6 +77,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

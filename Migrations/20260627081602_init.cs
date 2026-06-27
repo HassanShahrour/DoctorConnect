@@ -88,14 +88,13 @@ namespace DoctorConnect.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Address = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Longitude = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Latitude = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Latitude = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Longitude = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -280,10 +279,8 @@ namespace DoctorConnect.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Longitude = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Latitude = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Latitude = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Longitude = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -306,17 +303,15 @@ namespace DoctorConnect.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Qualifications = table.Column<string>(type: "longtext", nullable: false)
+                    Qualifications = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     YearsOfExperience = table.Column<int>(type: "int", nullable: false),
-                    Biography = table.Column<string>(type: "longtext", nullable: false)
+                    Biography = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConsultationFee = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    ProfilePhoto = table.Column<string>(type: "longtext", nullable: false)
+                    ConsultationFee = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    ProfilePhoto = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    ClinicId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     SpecialtyId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
@@ -328,12 +323,6 @@ namespace DoctorConnect.Migrations
                         name: "FK_Doctors_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Doctors_Clinics_ClinicId",
-                        column: x => x.ClinicId,
-                        principalTable: "Clinics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -353,13 +342,21 @@ namespace DoctorConnect.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DoctorId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PatientId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    PatientId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     AppointmentDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     AppointmentTime = table.Column<TimeSpan>(type: "time(6)", nullable: false),
-                    Notes = table.Column<string>(type: "longtext", nullable: false)
+                    Notes = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Fees = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    IsGuestPatient = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    GuestPatientFullName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    GuestPatientPhoneNumber = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    GuestPatientGender = table.Column<int>(type: "int", nullable: true),
+                    GuestPatientDateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -370,13 +367,13 @@ namespace DoctorConnect.Migrations
                         column: x => x.DoctorId,
                         principalTable: "Doctors",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Appointments_Patients_PatientId",
                         column: x => x.PatientId,
                         principalTable: "Patients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -388,9 +385,12 @@ namespace DoctorConnect.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     DoctorId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClinicId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     DayOfWeek = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<TimeSpan>(type: "time(6)", nullable: false),
                     EndTime = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    DurationInMinutes = table.Column<int>(type: "int", nullable: false),
                     IsAvailable = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
@@ -398,8 +398,41 @@ namespace DoctorConnect.Migrations
                 {
                     table.PrimaryKey("PK_DoctorAvailabilities", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_DoctorAvailabilities_Clinics_ClinicId",
+                        column: x => x.ClinicId,
+                        principalTable: "Clinics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_DoctorAvailabilities_Doctors_DoctorId",
                         column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DoctorClinics",
+                columns: table => new
+                {
+                    ClinicsId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DoctorsId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DoctorClinics", x => new { x.ClinicsId, x.DoctorsId });
+                    table.ForeignKey(
+                        name: "FK_DoctorClinics_Clinics_ClinicsId",
+                        column: x => x.ClinicsId,
+                        principalTable: "Clinics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DoctorClinics_Doctors_DoctorsId",
+                        column: x => x.DoctorsId,
                         principalTable: "Doctors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -438,6 +471,30 @@ namespace DoctorConnect.Migrations
                         name: "FK_MedicalRecords_Patients_PatientId",
                         column: x => x.PatientId,
                         principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "BreakTime",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DoctorAvailabilityId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Start = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    End = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BreakTime", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BreakTime_DoctorAvailabilities_DoctorAvailabilityId",
+                        column: x => x.DoctorAvailabilityId,
+                        principalTable: "DoctorAvailabilities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -516,14 +573,24 @@ namespace DoctorConnect.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_BreakTime_DoctorAvailabilityId",
+                table: "BreakTime",
+                column: "DoctorAvailabilityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DoctorAvailabilities_ClinicId",
+                table: "DoctorAvailabilities",
+                column: "ClinicId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DoctorAvailabilities_DoctorId",
                 table: "DoctorAvailabilities",
                 column: "DoctorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Doctors_ClinicId",
-                table: "Doctors",
-                column: "ClinicId");
+                name: "IX_DoctorClinics_DoctorsId",
+                table: "DoctorClinics",
+                column: "DoctorsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_SpecialtyId",
@@ -583,7 +650,10 @@ namespace DoctorConnect.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "DoctorAvailabilities");
+                name: "BreakTime");
+
+            migrationBuilder.DropTable(
+                name: "DoctorClinics");
 
             migrationBuilder.DropTable(
                 name: "MedicalAttachment");
@@ -595,16 +665,19 @@ namespace DoctorConnect.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "DoctorAvailabilities");
+
+            migrationBuilder.DropTable(
                 name: "MedicalRecords");
+
+            migrationBuilder.DropTable(
+                name: "Clinics");
 
             migrationBuilder.DropTable(
                 name: "Doctors");
 
             migrationBuilder.DropTable(
                 name: "Patients");
-
-            migrationBuilder.DropTable(
-                name: "Clinics");
 
             migrationBuilder.DropTable(
                 name: "Specialties");

@@ -105,5 +105,10 @@ namespace DoctorConnect.DbServices.Services
             }
             return result;
         }
+
+        public async Task<Patient> GetPatientByUserId(string userId)
+        {
+            return await _patientService.GetPatientByUserId(userId);
+        }
     }
 }

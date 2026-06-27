@@ -99,11 +99,12 @@
                         </div>
                         <div class="col-md-6">
                             <div class="df-field">
-                                <label asp-for="ClinicId" class="df-label">Clinic</label>
-                                <select asp-for="ClinicId" asp-items="Model.Clinics" class="df-control">
-                                    <option value="">Select Clinic</option>
-                                </select>
-                                <span asp-validation-for="ClinicId" class="df-validation"></span>
+                                <label class="df-label">Clinics</label>
+                                <button type="button" class="df-btn" data-bs-toggle="modal" data-bs-target="#clinicsModal">
+                                    Select Clinics
+                                </button>
+                                <div id="selectedClinicsList"></div>
+                                <input type="hidden" name="ClinicIds" id="ClinicIdsInput" value="@(string.Join(",", Model.ClinicIds ?? new List<string>()))" />
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -188,6 +189,36 @@
     </div>
 </div>
 
+<!-- Clinics Modal -->
+<div class="modal fade" id="clinicsModal" tabindex="-1" aria-labelledby="clinicsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clinicsModalLabel">Select Clinics</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="clinicSearch" class="form-control mb-2" placeholder="Search clinics..." />
+                <div style="max-height:300px;overflow-y:auto;">
+                    <ul id="clinicsList" class="list-group">
+                        @foreach (var clinic in Model.Clinics ?? Enumerable.Empty<SelectListItem>())
+                        {
+                            <li class="list-group-item">
+                                <input type="checkbox" class="clinic-checkbox" value="@clinic.Value" data-name="@clinic.Text" @(Model.ClinicIds != null && Model.ClinicIds.Contains(clinic.Value) ? "checked" : "") />
+                                @clinic.Text
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveClinicsBtn">Save Selection</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         (function () {
@@ -204,6 +235,50 @@
                 reader.readAsDataURL(file);
             });
         })();
+
+        // Clinic search functionality
+        document.getElementById('clinicSearch').addEventListener('input', function () {
+            var filter = this.value.toLowerCase();
+            document.querySelectorAll('#clinicsList li').forEach(function (li) {
+                var text = li.textContent.toLowerCase();
+                li.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        // Save selected clinics
+        document.getElementById('saveClinicsBtn').addEventListener('click', function () {
+            var selected = [];
+            var selectedNames = [];
+            document.querySelectorAll('.clinic-checkbox:checked').forEach(function (cb) {
+                selected.push(cb.value);
+                selectedNames.push(cb.getAttribute('data-name'));
+            });
+            document.getElementById('ClinicIdsInput').value = selected.join(',');
+            var list = document.getElementById('selectedClinicsList');
+            list.innerHTML = selectedNames.map(function (name) {
+                return '<span class="badge bg-primary me-1">' + name + '</span>';
+            }).join(' ');
+            var modal = bootstrap.Modal.getInstance(document.getElementById('clinicsModal'));
+            modal.hide();
+        });
+
+        // On page load, show selected clinics
+        document.addEventListener('DOMContentLoaded', function () {
+            var selectedIds = document.getElementById('ClinicIdsInput').value.split(',');
+            document.querySelectorAll('.clinic-checkbox').forEach(function (cb) {
+                if (selectedIds.includes(cb.value)) {
+                    cb.checked = true;
+                }
+            });
+            var selectedNames = [];
+            document.querySelectorAll('.clinic-checkbox:checked').forEach(function (cb) {
+                selectedNames.push(cb.getAttribute('data-name'));
+            });
+            var list = document.getElementById('selectedClinicsList');
+            list.innerHTML = selectedNames.map(function (name) {
+                return '<span class="badge bg-primary me-1">' + name + '</span>';
+            }).join(' ');
+        });
     </script>
     <partial name="_ValidationScriptsPartial" />
 }

@@ -44,6 +44,12 @@
                                         <i class="fa fa-calendar"></i>
                                     </a>
                                     <a class="tbl-action"
+                                       asp-action="Appointments"
+                                       asp-route-doctorId="@d.Id"
+                                       title="View Appointments">
+                                        <i class="fa fa-calendar-check"></i>
+                                    </a>
+                                    <a class="tbl-action"
                                        asp-action="Edit"
                                        asp-route-id="@d.Id"
                                        title="Edit">
