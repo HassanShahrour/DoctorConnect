@@ -64,6 +64,18 @@ namespace DoctorConnect.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDoctorViewModel model)
         {
+            // Normalize ClinicIds: prefer multiple inputs named ClinicIds, fallback to comma-separated ClinicIdsComma
+            var postedClinicIds = Request.Form["ClinicIds"].ToList();
+            if (postedClinicIds != null && postedClinicIds.Count > 0)
+            {
+                model.ClinicIds = postedClinicIds;
+            }
+            else if (Request.Form.ContainsKey("ClinicIdsComma"))
+            {
+                var comma = Request.Form["ClinicIdsComma"].ToString();
+                model.ClinicIds = (comma ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+            }
+
             if (!ModelState.IsValid)
             {
                 model.Specialities = FetchSpecialities();
@@ -103,7 +115,7 @@ namespace DoctorConnect.Controllers
                 ConsultationFee = doctor.ConsultationFee,
                 ProfilePhoto = doctor.ProfilePhoto,
                 IsActive = doctor.IsActive,
-                ClinicIds = doctor.Clinics?.Select(c => c.Id).ToList(),
+                ClinicIds = doctor.Clinics?.Select(c => c.Id).ToList() ?? new List<string>(),
                 SpecialtyId = doctor.SpecialtyId,
                 Specialities = FetchSpecialities(),
                 Clinics = FetchClinics(),
@@ -115,7 +127,24 @@ namespace DoctorConnect.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditDoctorViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            // Normalize ClinicIds similarly to Create
+            var postedClinicIds = Request.Form["ClinicIds"].ToList();
+            if (postedClinicIds != null && postedClinicIds.Count > 0)
+            {
+                model.ClinicIds = postedClinicIds;
+            }
+            else if (Request.Form.ContainsKey("ClinicIdsComma"))
+            {
+                var comma = Request.Form["ClinicIdsComma"].ToString();
+                model.ClinicIds = (comma ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Specialities = FetchSpecialities();
+                model.Clinics = FetchClinics();
+                return View(model);
+            }
             await _doctorService.UpdateAsync(model);
             return RedirectToAction(nameof(Index));
         }

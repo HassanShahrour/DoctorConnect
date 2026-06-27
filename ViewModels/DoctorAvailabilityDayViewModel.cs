@@ -9,10 +9,4 @@
         public int DurationInMinutes { get; set; }
         public List<BreakTimeViewModel> BreakTimes { get; set; } = new();
     }
-
-    public class BreakTimeViewModel
-    {
-        public TimeSpan? Start { get; set; }
-        public TimeSpan? End { get; set; }
-    }
 }

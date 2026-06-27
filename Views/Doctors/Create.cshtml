@@ -9,7 +9,7 @@
 <div class="content-page">
     <div class="page-card">
         <div class="page-card__body">
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <form asp-action="Create" method="post" enctype="multipart/form-data" id="doctorForm">
 
                 <div class="df-section">
                     <div class="df-section__label">
@@ -101,7 +101,11 @@
                                     Select Clinics
                                 </button>
                                 <div id="selectedClinicsList"></div>
-                                <input type="hidden" name="ClinicIds" id="ClinicIdsInput" />
+
+                                <!-- Container for generated hidden inputs so model binder gets multiple ClinicIds values -->
+                                <div id="ClinicIdsInputs"></div>
+                                <!-- legacy/comma value kept for backward compatibility -->
+                                <input type="hidden" name="ClinicIdsComma" id="ClinicIdsInput" />
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -242,21 +246,47 @@
             });
         });
 
-        // Save selected clinics
-        document.getElementById('saveClinicsBtn').addEventListener('click', function () {
+        function generateClinicHiddenInputs(containerId, commaFieldId) {
             var selected = [];
-            var selectedNames = [];
             document.querySelectorAll('.clinic-checkbox:checked').forEach(function (cb) {
                 selected.push(cb.value);
+            });
+
+            var container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            selected.forEach(function (id) {
+                var inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'ClinicIds';
+                inp.value = id;
+                container.appendChild(inp);
+            });
+
+            var commaInput = document.getElementById(commaFieldId);
+            if (commaInput) commaInput.value = selected.join(',');
+
+            // Update selected names display
+            var selectedNames = [];
+            document.querySelectorAll('.clinic-checkbox:checked').forEach(function (cb) {
                 selectedNames.push(cb.getAttribute('data-name'));
             });
-            document.getElementById('ClinicIdsInput').value = selected.join(',');
             var list = document.getElementById('selectedClinicsList');
-            list.innerHTML = selectedNames.map(function (name) {
+            if (list) list.innerHTML = selectedNames.map(function (name) {
                 return '<span class="badge bg-primary me-1">' + name + '</span>';
             }).join(' ');
+        }
+
+        // Save selected clinics (from modal Save button)
+        document.getElementById('saveClinicsBtn').addEventListener('click', function () {
+            generateClinicHiddenInputs('ClinicIdsInputs', 'ClinicIdsInput');
             var modal = bootstrap.Modal.getInstance(document.getElementById('clinicsModal'));
             modal.hide();
+        });
+
+        // Ensure hidden inputs are present on form submit even if modal wasn't used
+        document.getElementById('doctorForm').addEventListener('submit', function () {
+            generateClinicHiddenInputs('ClinicIdsInputs', 'ClinicIdsInput');
         });
     </script>
     <partial name="_ValidationScriptsPartial" />

@@ -1,327 +1,362 @@
 ﻿:root {
-    --color-surface: #ffffff;
-    --color-surface-2: #faf9f7;
-    --color-border: #e8e4dd;
-    --color-border-light: #f0ede8;
     --color-primary: #2a6b5e;
     --color-primary-mid: #3d8b7a;
     --color-primary-pale: #e8f4f1;
     --color-accent: #c8854c;
     --color-accent-pale: #fdf0e6;
+    --color-surface: #ffffff;
+    --color-surface-2: #faf9f7;
+    --color-border: #e8e4dd;
+    --color-border-light: #f0ede8;
     --color-text: #1e2622;
     --color-text-mid: #4a5550;
     --color-text-muted: #8a9490;
     --color-danger: #e06c5a;
     --color-danger-pale: #fef3f0;
-    --font-display: 'DM Serif Display', Georgia, serif;
-    --font-body: 'DM Sans', -apple-system, sans-serif;
+    --font-display: 'DM Serif Display',Georgia,serif;
+    --font-body: 'DM Sans',-apple-system,sans-serif;
+    --radius-sm: 6px;
     --radius-card: 4px;
     --radius-pill: 100px;
-    --radius-sm: 6px;
-    --transition: 0.18s ease;
+    --transition: .18s ease;
 }
 
-/* ── Header badge ─────────────────────────────────────────── */
+.page-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border-light);
+    box-shadow: 0 2px 16px rgba(42,107,94,.08),0 1px 4px rgba(0,0,0,.04);
+    overflow: hidden;
+    margin-bottom: 2rem
+}
+
+.page-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 2rem;
+    background: linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary-mid) 100%)
+}
+
+.page-card__title {
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: -.01em;
+    margin: 0
+}
+
+    .page-card__title em {
+        font-style: italic;
+        opacity: .8
+    }
+
+.page-card__body {
+    padding: 1.75rem 2rem 2rem
+}
+
 .avf-header-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: .45rem;
     font-family: var(--font-body);
-    font-size: 0.72rem;
+    font-size: .72rem;
     font-weight: 600;
-    letter-spacing: 0.07em;
+    letter-spacing: .07em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.7);
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.22);
-    padding: 0.35rem 0.9rem;
-    border-radius: var(--radius-pill);
+    color: rgba(255,255,255,.7);
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    padding: .35rem .9rem;
+    border-radius: var(--radius-pill)
 }
 
-/* ── Form wrapper ─────────────────────────────────────────── */
-.avf-form {
-    font-family: var(--font-body);
-}
-
-/* ── Scrollable table container ───────────────────────────── */
-.avf-table-wrap {
+.sched-table-wrap {
     overflow-x: auto;
     border-radius: 4px;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 1px 6px rgba(42,107,94,0.05);
+    border: 1px solid var(--color-border)
 }
 
-/* ── Table ────────────────────────────────────────────────── */
-.avf-table {
+table.sched-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-family: var(--font-body);
+    font-size: .875rem;
+    table-layout: auto
 }
 
-    /* ── Head ─────────────────────────────────────────────────── */
-    .avf-table thead tr {
-        background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);
+    table.sched-table thead tr.sched-thead-clinics {
+        background: var(--color-surface-2)
     }
 
-    .avf-table thead th {
-        font-family: var(--font-body);
-        font-size: 0.68rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,0.88);
-        padding: 1rem 1.25rem;
-        border: none;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-        .avf-table thead th small {
-            font-size: 0.6rem;
-            opacity: 0.65;
-            text-transform: none;
-            letter-spacing: 0;
+        table.sched-table thead tr.sched-thead-clinics th {
+            padding: .8rem 1.1rem;
+            border-bottom: 1px solid var(--color-border);
+            border-left: 1px solid var(--color-border-light);
+            font-weight: 400
         }
 
-    /* Col widths */
-    .avf-table .col-day {
-        text-align: left;
-        width: 160px;
-    }
+            table.sched-table thead tr.sched-thead-clinics th:first-child {
+                border-left: none
+            }
 
-    .avf-table .col-avail {
-        width: 110px;
-    }
-
-    .avf-table .col-time {
-        width: 160px;
-    }
-
-    .avf-table .col-dur {
-        width: 160px;
-    }
-
-/* ── Body rows ────────────────────────────────────────────── */
-.avf-row {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border-light);
-    transition: background var(--transition);
+.clinic-header-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 7px;
+    flex-shrink: 0;
+    vertical-align: middle
 }
 
-    .avf-row:last-child {
-        border-bottom: none;
-    }
-
-    .avf-row:nth-child(even) {
-        background: var(--color-surface-2);
-    }
-
-    .avf-row:hover {
-        background: var(--color-primary-pale);
-    }
-
-/* Dimmed / off state */
-.avf-row--off {
-    opacity: 0.45;
-    pointer-events: none; /* prevent interaction on off rows */
+.clinic-header-name {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--color-text);
+    vertical-align: middle
 }
 
-    /* Re-enable the toggle even when row is dimmed */
-    .avf-row--off .avf-cell--avail {
-        opacity: 1;
-        pointer-events: all;
+table.sched-table tbody tr {
+    background: var(--color-surface)
+}
+
+    table.sched-table tbody tr.sched-row--weekend {
+        background: var(--color-surface-2)
     }
 
-/* ── Cells ────────────────────────────────────────────────── */
-.avf-cell {
-    padding: 0.85rem 1.25rem;
-    text-align: center;
-    vertical-align: middle;
-    border: none;
+    table.sched-table tbody tr:last-child td {
+        border-bottom: none
+    }
+
+table.sched-table tbody td {
+    padding: .65rem .9rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--color-border-light)
 }
 
-.avf-cell--day {
-    text-align: left;
-}
+    table.sched-table tbody td.sched-td--clinic {
+        border-left: 1px solid var(--color-border-light)
+    }
 
-/* ── Day pill ─────────────────────────────────────────────── */
-.avf-day-pill {
+.sched-day-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 9px
 }
 
-.avf-day-abbr {
+.sched-day-abbr {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
     background: var(--color-primary-pale);
     color: var(--color-primary);
-    font-size: 0.68rem;
+    font-size: .7rem;
     font-weight: 800;
-    letter-spacing: 0.06em;
-    flex-shrink: 0;
+    letter-spacing: .05em;
+    flex-shrink: 0
 }
 
-.avf-day-full {
-    font-size: 0.875rem;
+.sched-row--weekend .sched-day-abbr {
+    background: #fdf0e6;
+    color: var(--color-accent)
+}
+
+.sched-day-full {
+    font-size: .85rem;
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-text)
 }
 
-/* ── Toggle switch ────────────────────────────────────────── */
+.sched-cell-inner {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem
+}
+
 .avf-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: .55rem;
     cursor: pointer;
-    user-select: none;
+    user-select: none
 }
 
 .avf-toggle__input {
     position: absolute;
     opacity: 0;
     width: 0;
-    height: 0;
+    height: 0
 }
 
 .avf-toggle__track {
     position: relative;
-    width: 44px;
-    height: 24px;
-    border-radius: 24px;
+    width: 40px;
+    height: 22px;
+    border-radius: 22px;
     background: var(--color-border);
     border: 1px solid var(--color-border);
-    transition: background var(--transition), border-color var(--transition);
-    flex-shrink: 0;
+    transition: background var(--transition),border-color var(--transition);
+    flex-shrink: 0
 }
 
 .avf-toggle__thumb {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
-    transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 1px 4px rgba(0,0,0,.18);
+    transition: transform .22s cubic-bezier(.4,0,.2,1)
 }
 
-/* Checked state */
 .avf-toggle__input:checked ~ .avf-toggle__track {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
+    background: var(--cell-accent, var(--color-primary));
+    border-color: var(--cell-accent, var(--color-primary))
 }
 
     .avf-toggle__input:checked ~ .avf-toggle__track .avf-toggle__thumb {
-        transform: translateX(20px);
+        transform: translateX(18px)
     }
 
-/* Focus ring */
-.avf-toggle__input:focus-visible ~ .avf-toggle__track {
-    box-shadow: 0 0 0 3px rgba(42,107,94,0.2);
-}
-
-/* Labels "On" / "Off" */
-.avf-toggle__label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+.avf-toggle__text {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .05em;
     text-transform: uppercase;
-    transition: opacity var(--transition);
+    color: var(--color-text-muted)
 }
 
-    .avf-toggle__label.on {
-        color: var(--color-primary);
-        display: none;
-    }
-
-    .avf-toggle__label.off {
-        color: var(--color-text-muted);
-    }
-
-.avf-toggle__input:checked ~ .avf-toggle__track ~ .avf-toggle__label.on {
-    display: inline;
+.avf-toggle__input:checked ~ .avf-toggle__track ~ .avf-toggle__text {
+    color: var(--cell-accent, var(--color-primary))
 }
 
-.avf-toggle__input:checked ~ .avf-toggle__track ~ .avf-toggle__label.off {
-    display: none;
+.sched-cell--off .sched-time-row, .sched-cell--off .breaks-list, .sched-cell--off .add-break {
+    opacity: .3;
+    pointer-events: none
 }
 
-/* ── Input wrapper ────────────────────────────────────────── */
-.avf-input-wrap {
-    position: relative;
+.sched-time-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 6px;
+    align-items: end
+}
+
+.sched-time-field {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 3px
 }
 
-.avf-input-icon {
-    position: absolute;
-    left: 0.75rem;
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    pointer-events: none;
-    z-index: 1;
+.sched-time-label {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted)
 }
 
-.avf-input {
-    width: 100%;
+.sched-input {
     font-family: var(--font-body);
-    font-size: 0.875rem;
+    font-size: .8rem;
     color: var(--color-text);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    padding: 0.5rem 0.75rem 0.5rem 2.1rem;
+    padding: .42rem .6rem;
     outline: none;
-    transition: border-color var(--transition), box-shadow var(--transition);
-    appearance: none;
-    -webkit-appearance: none;
+    transition: border-color var(--transition),box-shadow var(--transition);
+    width: 100%
 }
 
-    .avf-input:focus {
+    .sched-input:focus {
         border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgba(42,107,94,0.1);
+        box-shadow: 0 0 0 3px rgba(42,107,94,.1)
     }
 
-/* Number input (duration) — no left icon */
-.avf-cell--dur .avf-input {
-    padding-left: 0.75rem;
-    padding-right: 2.5rem;
-    text-align: right;
+input[type=number].sched-input {
+    width: 68px
 }
 
-/* Suffix "min" label */
-.avf-input-wrap--suffix {
-    position: relative;
+    input[type=number].sched-input::-webkit-inner-spin-button, input[type=number].sched-input::-webkit-outer-spin-button {
+        -webkit-appearance: none
+    }
+
+input[type=number].sched-input {
+    -moz-appearance: textfield
 }
 
-.avf-input-suffix {
-    position: absolute;
-    right: 0.7rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
-    pointer-events: none;
+.breaks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px
 }
 
-/* Hide browser number spinners */
-.avf-input[type="number"]::-webkit-inner-spin-button,
-.avf-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
+.break-row {
+    display: flex;
+    align-items: center;
+    gap: 6px
 }
 
-.avf-input[type="number"] {
-    -moz-appearance: textfield;
+.break-sep {
+    font-size: .75rem;
+    color: var(--color-text-muted)
 }
 
-/* ── Footer ───────────────────────────────────────────────── */
+.btn-remove-break {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-danger-pale);
+    border: none;
+    cursor: pointer;
+    color: var(--color-danger);
+    font-size: .9rem;
+    transition: background var(--transition),transform var(--transition);
+    flex-shrink: 0;
+    padding: 0;
+}
+
+    .btn-remove-break:hover {
+        background: var(--color-danger);
+        color: #fff;
+        transform: scale(1.1)
+    }
+
+.add-break {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-body);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: .28rem .75rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--cell-accent, var(--color-primary));
+    color: var(--cell-accent, var(--color-primary));
+    background: transparent;
+    cursor: pointer;
+    transition: background var(--transition),color var(--transition);
+    margin-top: 2px;
+    max-width: 8rem;
+}
+
+    .add-break:hover {
+        background: var(--cell-accent, var(--color-primary));
+        color: #fff
+    }
+
 .avf-footer {
     display: flex;
     align-items: center;
@@ -330,72 +365,80 @@
     padding-top: 1.25rem;
     border-top: 1px solid var(--color-border-light);
     gap: 1rem;
-    flex-wrap: wrap;
+    flex-wrap: wrap
 }
 
 .avf-hint {
-    font-size: 0.78rem;
+    font-size: .78rem;
     color: var(--color-text-muted);
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: .45rem;
     margin: 0;
-    max-width: 500px;
+    max-width: 520px
 }
 
     .avf-hint .fa {
         color: var(--color-primary-mid);
-        flex-shrink: 0;
+        flex-shrink: 0
     }
 
-/* ── Submit button ────────────────────────────────────────── */
 .avf-submit {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: .5rem;
     font-family: var(--font-body);
-    font-size: 0.875rem;
+    font-size: .875rem;
     font-weight: 600;
-    padding: 0.65rem 1.75rem;
+    padding: .65rem 1.75rem;
     border-radius: var(--radius-pill);
     border: none;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-mid) 100%);
+    background: linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary-mid) 100%);
     color: #fff;
     cursor: pointer;
-    letter-spacing: 0.03em;
-    transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
-    box-shadow: 0 4px 14px rgba(42,107,94,0.28);
-    white-space: nowrap;
+    letter-spacing: .03em;
+    transition: opacity var(--transition),transform var(--transition),box-shadow var(--transition);
+    box-shadow: 0 4px 14px rgba(42,107,94,.28);
+    white-space: nowrap
 }
 
     .avf-submit:hover {
-        opacity: 0.92;
+        opacity: .91;
         transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(42,107,94,0.32);
+        box-shadow: 0 6px 18px rgba(42,107,94,.32)
     }
 
-    .avf-submit:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(42,107,94,0.2);
+@media(max-width:680px) {
+    .page-card__body {
+        padding: 1.1rem
     }
 
-/* ── Responsive ───────────────────────────────────────────── */
-@media (max-width: 640px) {
-    .avf-cell {
-        padding: 0.7rem 0.75rem;
-    }
-
-    .avf-day-full {
-        display: none;
+    .page-card__header {
+        padding: 1.1rem 1.25rem;
+        flex-wrap: wrap;
+        gap: .75rem
     }
 
     .avf-footer {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-start
     }
 
     .avf-submit {
         width: 100%;
-        justify-content: center;
+        justify-content: center
     }
+
+    .sched-day-full {
+        display: none
+    }
+
+    .sched-time-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 5px
+    }
+
+        .sched-time-row input[type=number] {
+            grid-column: 1/-1
+        }
 }

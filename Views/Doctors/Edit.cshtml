@@ -104,7 +104,11 @@
                                     Select Clinics
                                 </button>
                                 <div id="selectedClinicsList"></div>
-                                <input type="hidden" name="ClinicIds" id="ClinicIdsInput" value="@(string.Join(",", Model.ClinicIds ?? new List<string>()))" />
+
+                                <!-- Container for generated hidden inputs so model binder gets multiple ClinicIds values -->
+                                <div id="ClinicIdsInputs"></div>
+                                <!-- legacy/comma value kept for backward compatibility -->
+                                <input type="hidden" name="ClinicIdsComma" id="ClinicIdsInput" value="@(string.Join(",", Model.ClinicIds ?? new List<string>()))" />
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -253,7 +257,23 @@
                 selected.push(cb.value);
                 selectedNames.push(cb.getAttribute('data-name'));
             });
+
+            // Remove existing generated inputs
+            var container = document.getElementById('ClinicIdsInputs');
+            container.innerHTML = '';
+
+            // Create one hidden input per selected clinic so model binder binds to List<string> ClinicIds
+            selected.forEach(function (id) {
+                var inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'ClinicIds';
+                inp.value = id;
+                container.appendChild(inp);
+            });
+
+            // Also set comma string for backward compatibility
             document.getElementById('ClinicIdsInput').value = selected.join(',');
+
             var list = document.getElementById('selectedClinicsList');
             list.innerHTML = selectedNames.map(function (name) {
                 return '<span class="badge bg-primary me-1">' + name + '</span>';
@@ -264,7 +284,7 @@
 
         // On page load, show selected clinics
         document.addEventListener('DOMContentLoaded', function () {
-            var selectedIds = document.getElementById('ClinicIdsInput').value.split(',');
+            var selectedIds = (document.getElementById('ClinicIdsInput').value || '').split(',').filter(Boolean);
             document.querySelectorAll('.clinic-checkbox').forEach(function (cb) {
                 if (selectedIds.includes(cb.value)) {
                     cb.checked = true;
@@ -278,6 +298,17 @@
             list.innerHTML = selectedNames.map(function (name) {
                 return '<span class="badge bg-primary me-1">' + name + '</span>';
             }).join(' ');
+
+            // Also generate ClinicIds inputs for the existing selections so model binder picks them up if the user doesn't reopen modal
+            var container = document.getElementById('ClinicIdsInputs');
+            container.innerHTML = '';
+            selectedIds.forEach(function (id) {
+                var inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'ClinicIds';
+                inp.value = id;
+                container.appendChild(inp);
+            });
         });
     </script>
     <partial name="_ValidationScriptsPartial" />
