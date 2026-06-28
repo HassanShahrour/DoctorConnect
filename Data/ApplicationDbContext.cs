@@ -19,6 +19,7 @@ namespace DoctorConnect.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Specialty> Specialties { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
+        public DbSet<Settings> Settings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="~/css/tables.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body id="body-pd">
     <header class="header" id="header">
@@ -55,6 +55,11 @@
                         <a asp-controller="Specialities" asp-action="Index" class="nav_link">
                             <i class="fas fa-stethoscope nav_icon"></i>
                             <span class="nav_name">Specialities</span>
+                        </a>
+
+                        <a asp-controller="Settings" asp-action="Index" class="nav_link">
+                            <i class="fas fa-cog nav_icon"></i>
+                            <span class="nav_name">Settings</span>
                         </a>
                     }
                 </div>
@@ -102,7 +107,6 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
     <script>
-        <partial name="_ValidationScriptsPartial" />
         @if (TempData["Success"] != null)
         {
                 <text>
@@ -129,6 +133,34 @@
                     });
                 </text>
         }
+    </script>
+    <script>
+        document.addEventListener("click", function(e) {
+            const btn = e.target.closest(".sweet-confirm");
+            if (!btn) return;
+            e.preventDefault();
+            const form = btn.closest("form");
+            const title = btn.dataset.confirmTitle || "Are you sure?";
+            const text = btn.dataset.confirmText || "This action cannot be undone.";
+
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, proceed!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (form) {
+                        form.submit();
+                    } else {
+                        window.location.href = btn.href;
+                    }
+                }
+            });
+        });
     </script>
     <script>
         document.addEventListener("click", function (e) {

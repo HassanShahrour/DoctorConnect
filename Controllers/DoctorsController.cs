@@ -40,131 +40,219 @@ namespace DoctorConnect.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var docs = await _doctorService.GetAllAsync();
-            return View(docs);
+            try
+            {
+                var docs = await _doctorService.GetAllAsync();
+                return View(docs);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DoctorsController.Index: {ex}");
+                TempData["Error"] = $"An error occurred loading doctors: {ex.Message}";
+                return View(Enumerable.Empty<DoctorConnect.Models.Doctor>());
+            }
         }
 
         public async Task<IActionResult> Browse()
         {
-            var docs = await _doctorService.GetAllAsync();
-            return View(docs);
+            try
+            {
+                var docs = await _doctorService.GetAllAsync();
+                return View(docs);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DoctorsController.Browse: {ex}");
+                TempData["Error"] = $"An error occurred loading doctors: {ex.Message}";
+                return View(Enumerable.Empty<DoctorConnect.Models.Doctor>());
+            }
         }
 
         public IActionResult Create()
         {
-            var model = new CreateDoctorViewModel
+            try
             {
-                Specialities = FetchSpecialities(),
-                Clinics = FetchClinics(),
-            };
-            return View(model);
+                var model = new CreateDoctorViewModel
+                {
+                    Specialities = FetchSpecialities(),
+                    Clinics = FetchClinics(),
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DoctorsController.Create [GET]: {ex}");
+                TempData["Error"] = $"An error occurred initializing view: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDoctorViewModel model)
         {
-            // Normalize ClinicIds: prefer multiple inputs named ClinicIds, fallback to comma-separated ClinicIdsComma
-            var postedClinicIds = Request.Form["ClinicIds"].ToList();
-            if (postedClinicIds != null && postedClinicIds.Count > 0)
+            try
             {
-                model.ClinicIds = postedClinicIds;
-            }
-            else if (Request.Form.ContainsKey("ClinicIdsComma"))
-            {
-                var comma = Request.Form["ClinicIdsComma"].ToString();
-                model.ClinicIds = (comma ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
-            }
+                var postedClinicIds = Request.Form["ClinicIds"].ToList();
+                if (postedClinicIds != null && postedClinicIds.Count > 0)
+                {
+                    model.ClinicIds = postedClinicIds;
+                }
+                else if (Request.Form.ContainsKey("ClinicIdsComma"))
+                {
+                    var comma = Request.Form["ClinicIdsComma"].ToString();
+                    model.ClinicIds = (comma ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+                }
 
-            if (!ModelState.IsValid)
-            {
+                if (!ModelState.IsValid)
+                {
+                    model.Specialities = FetchSpecialities();
+                    model.Clinics = FetchClinics();
+                    TempData["Error"] = "Please correct errors in form fields.";
+                    return View(model);
+                }
+                var result = await _accountService.RegisterDoctor(model);
+                if (result.Succeeded)
+                {
+                    TempData["Success"] = "Doctor registered successfully.";
+                    return RedirectToAction(nameof(Index));
+                }
+                foreach (var err in result.Errors)
+                    ModelState.AddModelError(string.Empty, err.Description);
                 model.Specialities = FetchSpecialities();
                 model.Clinics = FetchClinics();
                 return View(model);
             }
-            var result = await _accountService.RegisterDoctor(model);
-            if (result.Succeeded)
+            catch (Exception ex)
             {
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine($"Error in DoctorsController.Create [POST]: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
+                model.Specialities = FetchSpecialities();
+                model.Clinics = FetchClinics();
+                return View(model);
             }
-            foreach (var err in result.Errors)
-                ModelState.AddModelError(string.Empty, err.Description);
-            model.Specialities = FetchSpecialities();
-            model.Clinics = FetchClinics();
-            return View(model);
         }
 
         public async Task<IActionResult> Edit(string id)
         {
-            var doctor = await _doctorService.GetByIdAsync(id);
-            if (doctor == null) return NotFound();
-            var model = new EditDoctorViewModel
+            try
             {
-                Id = doctor.Id,
-                UserId = doctor.UserId,
-                Email = doctor.User?.Email,
-                PhoneNumber = doctor.User?.PhoneNumber,
-                FirstName = doctor.User?.FirstName,
-                LastName = doctor.User?.LastName,
-                Gender = doctor.User?.Gender,
-                DateOfBirth = doctor.User?.DateOfBirth,
-                Address = doctor.User?.Address,
-                Qualifications = doctor.Qualifications,
-                YearsOfExperience = doctor.YearsOfExperience,
-                Biography = doctor.Biography,
-                ConsultationFee = doctor.ConsultationFee,
-                ProfilePhoto = doctor.ProfilePhoto,
-                IsActive = doctor.IsActive,
-                ClinicIds = doctor.Clinics?.Select(c => c.Id).ToList() ?? new List<string>(),
-                SpecialtyId = doctor.SpecialtyId,
-                Specialities = FetchSpecialities(),
-                Clinics = FetchClinics(),
-            };
-            return View(model);
+                var doctor = await _doctorService.GetByIdAsync(id);
+                if (doctor == null) return NotFound();
+                var model = new EditDoctorViewModel
+                {
+                    Id = doctor.Id,
+                    UserId = doctor.UserId,
+                    Email = doctor.User?.Email,
+                    PhoneNumber = doctor.User?.PhoneNumber,
+                    FirstName = doctor.User?.FirstName,
+                    LastName = doctor.User?.LastName,
+                    Gender = doctor.User?.Gender,
+                    DateOfBirth = doctor.User?.DateOfBirth,
+                    Address = doctor.User?.Address,
+                    Qualifications = doctor.Qualifications,
+                    YearsOfExperience = doctor.YearsOfExperience,
+                    Biography = doctor.Biography,
+                    ConsultationFee = doctor.ConsultationFee,
+                    ProfilePhoto = doctor.ProfilePhoto,
+                    IsActive = doctor.IsActive,
+                    ClinicIds = doctor.Clinics?.Select(c => c.Id).ToList() ?? new List<string>(),
+                    SpecialtyId = doctor.SpecialtyId,
+                    Specialities = FetchSpecialities(),
+                    Clinics = FetchClinics(),
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DoctorsController.Edit [GET]: {ex}");
+                TempData["Error"] = $"An error occurred loading details: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditDoctorViewModel model)
         {
-            // Normalize ClinicIds similarly to Create
-            var postedClinicIds = Request.Form["ClinicIds"].ToList();
-            if (postedClinicIds != null && postedClinicIds.Count > 0)
+            try
             {
-                model.ClinicIds = postedClinicIds;
-            }
-            else if (Request.Form.ContainsKey("ClinicIdsComma"))
-            {
-                var comma = Request.Form["ClinicIdsComma"].ToString();
-                model.ClinicIds = (comma ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
-            }
+                var postedClinicIds = Request.Form["ClinicIds"].ToList();
+                if (postedClinicIds != null && postedClinicIds.Count > 0)
+                {
+                    model.ClinicIds = postedClinicIds;
+                }
+                else if (Request.Form.ContainsKey("ClinicIdsComma"))
+                {
+                    var comma = Request.Form["ClinicIdsComma"].ToString();
+                    model.ClinicIds = (comma ?? string.Empty).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+                }
 
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    model.Specialities = FetchSpecialities();
+                    model.Clinics = FetchClinics();
+                    TempData["Error"] = "Form validation failed. Please check your details.";
+                    return View(model);
+                }
+                await _doctorService.UpdateAsync(model);
+                TempData["Success"] = "Doctor details updated successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error in DoctorsController.Edit [POST]: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
                 model.Specialities = FetchSpecialities();
                 model.Clinics = FetchClinics();
                 return View(model);
             }
-            await _doctorService.UpdateAsync(model);
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string id)
         {
-            await _doctorService.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _doctorService.DeleteAsync(id);
+                TempData["Success"] = "Doctor deleted successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DoctorsController.Delete: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         public async Task<IActionResult> Appointments(string doctorId)
         {
-            var appointments = await _doctorService.GetByIdAsync(doctorId);
-            var model = new AppointmentViewModel
+            try
             {
-                Appointments = appointments?.Appointments ?? new List<DoctorConnect.Models.Appointment>()
-            };
-            return View("~/Views/Appointments/Index.cshtml", model);
+                var doctor = await _doctorService.GetByIdAsync(doctorId);
+                if (doctor == null) return NotFound();
+
+                var appointments = (doctor.Appointments ?? new List<DoctorConnect.Models.Appointment>())
+                    .OrderBy(a => a.AppointmentDate)
+                    .ThenBy(a => a.AppointmentTime)
+                    .ToList();
+
+                var model = new AppointmentViewModel
+                {
+                    DoctorId = doctorId,
+                    DoctorName = string.Join(" ", new[] { doctor.User?.FirstName, doctor.User?.LastName }.Where(x => !string.IsNullOrWhiteSpace(x))),
+                    Appointments = appointments
+                };
+                return View("~/Views/Appointments/Index.cshtml", model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DoctorsController.Appointments: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

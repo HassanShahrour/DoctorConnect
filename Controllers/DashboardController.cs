@@ -17,38 +17,65 @@ namespace DoctorConnect.Controllers
         [Authorize(Roles = "Admin,SuperAdmin")]
         public IActionResult Admin()
         {
-            var model = new
+            try
             {
-                TotalDoctors = _dashboard.GetTotalDoctorsAsync().Result,
-                TotalPatients = _dashboard.GetTotalPatientsAsync().Result,
-                TotalAppointments = _dashboard.GetTotalAppointmentsAsync().Result,
-                CompletedAppointments = _dashboard.GetCompletedAppointmentsAsync().Result,
-                PendingAppointments = _dashboard.GetPendingAppointmentsAsync().Result
-            };
-            return View(model);
+                var model = new
+                {
+                    TotalDoctors = _dashboard.GetTotalDoctorsAsync().Result,
+                    TotalPatients = _dashboard.GetTotalPatientsAsync().Result,
+                    TotalAppointments = _dashboard.GetTotalAppointmentsAsync().Result,
+                    CompletedAppointments = _dashboard.GetCompletedAppointmentsAsync().Result,
+                    PendingAppointments = _dashboard.GetPendingAppointmentsAsync().Result
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DashboardController.Admin: {ex}");
+                TempData["Error"] = $"An error occurred loading dashboard statistics: {ex.Message}";
+                return View();
+            }
         }
 
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> Doctor()
         {
-            var model = new
+            try
             {
-                TodaysAppointments = 0,
-                UpcomingAppointments = 0,
-                PatientCount = await _dashboard.GetTotalPatientsAsync()
-            };
-            return View(model);
+                var model = new
+                {
+                    TodaysAppointments = 0,
+                    UpcomingAppointments = 0,
+                    PatientCount = await _dashboard.GetTotalPatientsAsync()
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DashboardController.Doctor: {ex}");
+                TempData["Error"] = $"An error occurred loading statistics: {ex.Message}";
+                return View();
+            }
         }
 
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> Patient()
         {
-            var model = new
+            try
             {
-                UpcomingAppointments = 0,
-                AppointmentHistory = 0
-            };
-            return View(model);
+                var model = new
+                {
+                    UpcomingAppointments = 0,
+                    AppointmentHistory = 0
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DashboardController.Patient: {ex}");
+                TempData["Error"] = $"An error occurred loading stats: {ex.Message}";
+                return View();
+            }
         }
     }
 }

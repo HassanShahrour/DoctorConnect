@@ -1,9 +1,11 @@
 ﻿using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DoctorConnect.Controllers
 {
+    [Authorize]
     public class ClinicsController : Controller
     {
         private readonly IClinicService _clinicService;
@@ -13,34 +15,81 @@ namespace DoctorConnect.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var clinics = await _clinicService.GetAllAsync();
-            return View(clinics);
+            try
+            {
+                var clinics = await _clinicService.GetAllAsync();
+                return View(clinics);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ClinicsController.Index: {ex}");
+                TempData["Error"] = $"An error occurred loading clinics: {ex.Message}";
+                return View(Enumerable.Empty<Clinic>());
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Clinic model)
         {
-            if (!ModelState.IsValid) RedirectToAction(nameof(Index));
-            await _clinicService.CreateAsync(model);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Invalid clinic details supplied.";
+                    return RedirectToAction(nameof(Index));
+                }
+                await _clinicService.CreateAsync(model);
+                TempData["Success"] = "Clinic created successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ClinicsController.Create: {ex}");
+                TempData["Error"] = $"An error occurred creating clinic: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Clinic model)
         {
-            if (!ModelState.IsValid) RedirectToAction(nameof(Index));
-            await _clinicService.UpdateAsync(model);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Invalid clinic details supplied.";
+                    return RedirectToAction(nameof(Index));
+                }
+                await _clinicService.UpdateAsync(model);
+                TempData["Success"] = "Clinic updated successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ClinicsController.Edit: {ex}");
+                TempData["Error"] = $"An error occurred updating clinic: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string id)
         {
-            await _clinicService.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _clinicService.DeleteAsync(id);
+                TempData["Success"] = "Clinic deleted successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ClinicsController.Delete: {ex}");
+                TempData["Error"] = $"An error occurred deleting clinic: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

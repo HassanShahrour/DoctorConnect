@@ -7,6 +7,7 @@ namespace DoctorConnect.Models
         [Required]
         public string? DoctorId { get; set; }
         public string? PatientId { get; set; }
+        public string? ClinicId { get; set; }
         [Required]
         public DateTime AppointmentDate { get; set; }
         [Required]

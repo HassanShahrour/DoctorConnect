@@ -38,18 +38,27 @@ namespace DoctorConnect.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO model)
         {
-            if (!ModelState.IsValid) return View(model);
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-            if (result.Succeeded)
+            try
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                if (roles.Contains("Admin"))
+                if (!ModelState.IsValid) return View(model);
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                if (result.Succeeded)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains("Admin"))
+                        return RedirectToAction("Index", "Home");
                     return RedirectToAction("Index", "Home");
-                return RedirectToAction("Index", "Home");
+                }
+                ModelState.AddModelError(string.Empty, "Invalid credentials!");
+                return View(model);
             }
-            ModelState.AddModelError(string.Empty, "Invalid credentials!");
-            return View(model);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AccountController.Login: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
+                return View(model);
+            }
         }
 
         public IActionResult Register() => View();
@@ -57,20 +66,30 @@ namespace DoctorConnect.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterDTO model)
         {
-            if (!ModelState.IsValid) return View(model);
-            var result = await _accountService.RegisterPatient(model);
-            if (result.Succeeded)
+            try
             {
-                await Login(new LoginDTO
+                if (!ModelState.IsValid) return View(model);
+                var result = await _accountService.RegisterPatient(model);
+                if (result.Succeeded)
                 {
-                    Email = model.Email,
-                    Password = model.Password,
-                    RememberMe = false
-                });
+                    await Login(new LoginDTO
+                    {
+                        Email = model.Email,
+                        Password = model.Password,
+                        RememberMe = false
+                    });
+                    TempData["Success"] = "Registration successful.";
+                }
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+                return View(model);
             }
-            foreach (var error in result.Errors)
-                ModelState.AddModelError(string.Empty, error.Description);
-            return View(model);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AccountController.Register: {ex}");
+                TempData["Error"] = $"An error occurred during registration: {ex.Message}";
+                return View(model);
+            }
         }
 
         public IActionResult VerifyEmail() => View();
@@ -78,19 +97,28 @@ namespace DoctorConnect.Controllers
         [HttpPost]
         public async Task<IActionResult> VerifyEmail(VerifyEmailDTO model)
         {
-            if (!ModelState.IsValid) return View(model);
-            var user = await _userManager.FindByNameAsync(model.Email);
-            if (user == null)
+            try
             {
-                ModelState.AddModelError(string.Empty, "Something is wrong!");
+                if (!ModelState.IsValid) return View(model);
+                var user = await _userManager.FindByNameAsync(model.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Something is wrong!");
+                    return View(model);
+                }
+                var otp = new Random().Next(100000, 999999).ToString();
+                HttpContext.Session.SetString("OTP_Email", model.Email);
+                HttpContext.Session.SetString("OTP_Code", otp);
+                HttpContext.Session.SetString("OTP_Expiry", DateTime.UtcNow.AddMinutes(5).ToString("O"));
+                await _emailService.SendEmailAsync(model.Email, "Your OTP Code", $"Your OTP is: {otp}");
+                return RedirectToAction("VerifyOtp");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AccountController.VerifyEmail: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
                 return View(model);
             }
-            var otp = new Random().Next(100000, 999999).ToString();
-            HttpContext.Session.SetString("OTP_Email", model.Email);
-            HttpContext.Session.SetString("OTP_Code", otp);
-            HttpContext.Session.SetString("OTP_Expiry", DateTime.UtcNow.AddMinutes(5).ToString("O"));
-            await _emailService.SendEmailAsync(model.Email, "Your OTP Code", $"Your OTP is: {otp}");
-            return RedirectToAction("VerifyOtp");
         }
 
         [HttpGet]
@@ -102,29 +130,38 @@ namespace DoctorConnect.Controllers
         [HttpPost]
         public IActionResult VerifyOtp(VerifyOtpDTO model)
         {
-            if (!ModelState.IsValid) return View(model);
-            var storedOtp = HttpContext.Session.GetString("OTP_Code");
-            var storedEmail = HttpContext.Session.GetString("OTP_Email");
-            var expiryString = HttpContext.Session.GetString("OTP_Expiry");
-            if (storedOtp == null || storedEmail == null || expiryString == null)
+            try
             {
-                ModelState.AddModelError("", "OTP session expired. Please try again.");
+                if (!ModelState.IsValid) return View(model);
+                var storedOtp = HttpContext.Session.GetString("OTP_Code");
+                var storedEmail = HttpContext.Session.GetString("OTP_Email");
+                var expiryString = HttpContext.Session.GetString("OTP_Expiry");
+                if (storedOtp == null || storedEmail == null || expiryString == null)
+                {
+                    ModelState.AddModelError("", "OTP session expired. Please try again.");
+                    return View(model);
+                }
+                var expiry = DateTime.Parse(expiryString);
+                if (DateTime.UtcNow > expiry)
+                {
+                    ModelState.AddModelError("", "OTP expired. Please request again.");
+                    return View(model);
+                }
+                if (model.OtpCode != storedOtp)
+                {
+                    ModelState.AddModelError("", "Invalid OTP.");
+                    return View(model);
+                }
+                HttpContext.Session.Remove("OTP_Code");
+                HttpContext.Session.Remove("OTP_Expiry");
+                return RedirectToAction("ChangePassword", new { username = storedEmail });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AccountController.VerifyOtp: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
                 return View(model);
             }
-            var expiry = DateTime.Parse(expiryString);
-            if (DateTime.UtcNow > expiry)
-            {
-                ModelState.AddModelError("", "OTP expired. Please request again.");
-                return View(model);
-            }
-            if (model.OtpCode != storedOtp)
-            {
-                ModelState.AddModelError("", "Invalid OTP.");
-                return View(model);
-            }
-            HttpContext.Session.Remove("OTP_Code");
-            HttpContext.Session.Remove("OTP_Expiry");
-            return RedirectToAction("ChangePassword", new { username = storedEmail });
         }
 
         public IActionResult ChangePassword(string username)
@@ -137,38 +174,59 @@ namespace DoctorConnect.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordDTO model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                ModelState.AddModelError(string.Empty, "Something went wrong. Try again.");
-                return View(model);
-            }
-            var user = await _userManager.FindByNameAsync(model.Email ?? "");
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "Email not found!");
-                return View(model);
-            }
-            var removeResult = await _userManager.RemovePasswordAsync(user);
-            if (!removeResult.Succeeded)
-            {
-                foreach (var error in removeResult.Errors)
+                if (!ModelState.IsValid)
+                {
+                    ModelState.AddModelError(string.Empty, "Something went wrong. Try again.");
+                    return View(model);
+                }
+                var user = await _userManager.FindByNameAsync(model.Email ?? "");
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Email not found!");
+                    return View(model);
+                }
+                var removeResult = await _userManager.RemovePasswordAsync(user);
+                if (!removeResult.Succeeded)
+                {
+                    foreach (var error in removeResult.Errors)
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    return View(model);
+                }
+                var addResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                if (addResult.Succeeded)
+                {
+                    TempData["Success"] = "Password updated successfully.";
+                    return RedirectToAction("Login");
+                }
+                foreach (var error in addResult.Errors)
                     ModelState.AddModelError(string.Empty, error.Description);
                 return View(model);
             }
-            var addResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
-            if (addResult.Succeeded)
-                return RedirectToAction("Login");
-            foreach (var error in addResult.Errors)
-                ModelState.AddModelError(string.Empty, error.Description);
-            return View(model);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AccountController.ChangePassword: {ex}");
+                TempData["Error"] = $"An error occurred: {ex.Message}";
+                return View(model);
+            }
         }
 
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
+            try
+            {
+                await _signInManager.SignOutAsync();
+                TempData["Success"] = "Logged out successfully.";
+                return RedirectToAction("Login", "Account");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in AccountController.Logout: {ex}");
+                TempData["Error"] = "An error occurred during sign out.";
+                return RedirectToAction("Index", "Home");
+            }
         }
-
     }
 }

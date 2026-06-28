@@ -1,0 +1,129 @@
+@model DoctorConnect.ViewModels.AppointmentViewModel
+@{
+    ViewData["Title"] = "Appointments Calendar";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/appointments-shared.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/appointments-calendar.css" asp-append-version="true" />
+}
+<div class="apx-page">
+    <section class="apx-hero">
+        <div class="apx-hero__header">
+            <div>
+                <span class="apx-hero__eyebrow">Doctor schedule</span>
+                <h1 class="apx-hero__title">Appointments calendar</h1>
+                <p class="apx-hero__subtitle">
+                    @(string.IsNullOrWhiteSpace(Model.DoctorName)
+                                        ? "Monthly calendar view for appointments."
+                                        : $"Monthly calendar view for Dr. {Model.DoctorName}.")
+                </p>
+            </div>
+            <div class="apx-hero__actions">
+                <a class="apx-btn-create apx-btn-create--ghost"
+                   asp-controller="Appointments" asp-action="Index" asp-route-doctorId="@Model.DoctorId">
+                    <i class="fa fa-bars"></i> Cards view
+                </a>
+                <a class="apx-btn-create"
+                   asp-controller="Appointments" asp-action="Create" asp-route-id="@Model.DoctorId">
+                    <i class="fa fa-plus"></i> New appointment
+                </a>
+            </div>
+        </div>
+    </section>
+    <section class="apx-section">
+        <div class="apx-section__header">
+            <div class="apx-section__heading">
+                <h2 class="apx-section__title">Calendar overview</h2>
+                <p class="apx-section__subtitle">Days with appointments show a dot. Click a day to inspect, then click an item to edit.</p>
+            </div>
+        </div>
+        <div class="apx-calendar-shell">
+            <div id="appointmentsCalendar"></div>
+        </div>
+    </section>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){
+            const calendarElement=document.getElementById('appointmentsCalendar');
+            if(!calendarElement||typeof FullCalendar==='undefined')return;
+            const calendarEvents=[
+                @for (var i = 0; i < Model.CalendarDays.Count(); i++)
+                {
+                        var day = Model.CalendarDays.ElementAt(i);
+                        <text>{
+                            title:'@day.AppointmentCount appointment@(day.AppointmentCount > 1 ? "s" : string.Empty)',
+                            start:'@day.Date.ToString("yyyy-MM-dd")',
+                            allDay:true,
+                            display:'list-item',
+                            classNames:['apx-fc-dot-event'],
+                            extendedProps:{appointments:[
+                                @for (var j = 0; j < day.Appointments.Count(); j++)
+                                {
+                                        var appt = day.Appointments.ElementAt(j);
+                                        <text>{
+                                            id:'@appt.Id',
+                                            patientName:'@Html.Raw((appt.PatientName ?? string.Empty).Replace("'", "\\'"))',
+                                            timeDisplay:'@appt.TimeDisplay',
+                                            status:'@appt.Status',
+                                            notes:'@Html.Raw((appt.Notes ?? string.Empty).Replace("'", "\\'"))',
+                                            fees:'@(appt.Fees?.ToString("0.##") ?? string.Empty)',
+                                            isGuestPatient:@appt.IsGuestPatient.ToString().ToLowerInvariant()
+                                        }@(j < day.Appointments.Count() - 1 ? "," : string.Empty)</text>
+                                }
+                            ]}
+                        }@(i < Model.CalendarDays.Count() - 1 ? "," : string.Empty)</text>
+                }
+            ];
+            const calendar=new FullCalendar.Calendar(calendarElement,{
+                initialView:'dayGridMonth',
+                height:'auto',
+                headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,listWeek'},
+                events:calendarEvents,
+                eventDisplay:'list-item',
+                dateClick:function(info){
+                    const match=calendarEvents.find(e=>e.start===info.dateStr);
+                    if(!match)return;
+                    showAppointments(info.dateStr,match.extendedProps.appointments);
+                },
+                eventClick:function(info){
+                    info.jsEvent.preventDefault();
+                    showAppointments(info.event.startStr,info.event.extendedProps.appointments);
+                }
+            });
+            calendar.render();
+            function showAppointments(dateText,appointments){
+                const itemsHtml=appointments.map(a=>{
+                    const notesHtml=a.notes?`<div class="apx-calendar-modal__notes">${esc(a.notes)}</div>`:'';
+                    const feeHtml=a.fees?`<span class="apx-badge">$${esc(a.fees)}</span>`:'';
+                    const guestHtml=a.isGuestPatient?'<span class="apx-badge apx-badge--guest">Guest</span>':'';
+                    return `<a class="apx-calendar-modal__item" href="/Appointments/Edit?id=${a.id}">
+                        <div class="apx-calendar-modal__item-top">
+                            <div>
+                                <div class="apx-calendar-modal__patient">${esc(a.patientName)}</div>
+                                <div class="apx-calendar-modal__time">${esc(a.timeDisplay)}</div>
+                            </div>
+                            <span class="apx-badge apx-badge--${esc(a.status)}">${esc(a.status)}</span>
+                        </div>
+                        <div class="apx-calendar-modal__meta">${guestHtml}${feeHtml}</div>
+                        ${notesHtml}
+                    </a>`;
+                }).join('');
+                Swal.fire({
+                    title:`Appointments on ${fmtDate(dateText)}`,
+                    html:`<div class="apx-calendar-modal">${itemsHtml}</div>`,
+                    width:720,
+                    showConfirmButton:false,
+                    showCloseButton:true,
+                    customClass:{popup:'apx-calendar-swal'}
+                });
+            }
+            function fmtDate(d){
+                return new Date(d+'T00:00:00').toLocaleDateString(undefined,{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+            }
+            function esc(v){
+                return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+            }
+        });
+    </script>
+}

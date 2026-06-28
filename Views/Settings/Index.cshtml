@@ -1,0 +1,23 @@
+@model DoctorConnect.Models.Settings
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div class="content-page">
+    <div class="page-card">
+        <div class="page-card__header">
+            <h1 class="page-card__title">Settings</h1>
+        </div>
+        <div class="page-card__body">
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="form-label">Number of days to display</label>
+                    <input type="number" class="form-control" asp-for="NumberOfDaysToDisplay" min="1" />
+                </div>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+</div>

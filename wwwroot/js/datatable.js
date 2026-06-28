@@ -74,6 +74,5 @@
 }
 
 $(document).ready(function () {
-    console.log("hassan");
     initializeDataTable();
 });

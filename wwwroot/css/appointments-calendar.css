@@ -1,0 +1,210 @@
+﻿.apx-calendar-shell {
+    border: 1px solid var(--color-border-light);
+    border-radius: 14px;
+    overflow: hidden
+}
+
+#appointmentsCalendar .fc {
+    font-family: var(--font-body)
+}
+
+#appointmentsCalendar .fc-toolbar {
+    padding: .85rem 1.1rem;
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+    gap: .5rem
+}
+
+#appointmentsCalendar .fc-toolbar-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--color-text)
+}
+
+#appointmentsCalendar .fc-button-primary {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    border-radius: var(--radius-pill) !important;
+    padding: .32rem .85rem !important;
+    font-family: var(--font-body) !important;
+    font-size: .75rem !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+    transition: background var(--transition) !important;
+    margin: 1px !important
+}
+
+    #appointmentsCalendar .fc-button-primary:hover, #appointmentsCalendar .fc-button-primary:not(:disabled):active, #appointmentsCalendar .fc-button-primary.fc-button-active {
+        background: var(--color-primary-mid) !important;
+        border-color: var(--color-primary-mid) !important
+    }
+
+#appointmentsCalendar .fc-daygrid-day {
+    transition: background var(--transition)
+}
+
+    #appointmentsCalendar .fc-daygrid-day:hover {
+        background: rgba(42,107,94,.04)
+    }
+
+    #appointmentsCalendar .fc-daygrid-day.fc-day-today {
+        background: var(--color-primary-pale) !important
+    }
+
+#appointmentsCalendar .fc-daygrid-day-number {
+    color: var(--color-text);
+    font: 700 .8rem var(--font-body);
+    text-decoration: none;
+    padding: 6px 8px
+}
+
+#appointmentsCalendar .fc-day-today .fc-daygrid-day-number {
+    width: 26px;
+    height: 26px;
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px
+}
+
+#appointmentsCalendar .fc-col-header-cell-cushion {
+    color: var(--color-text-muted);
+    font: 700 .65rem var(--font-body);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .08em
+}
+
+#appointmentsCalendar .fc-scrollgrid {
+    border-color: var(--color-border-light) !important
+}
+
+    #appointmentsCalendar .fc-scrollgrid td, #appointmentsCalendar .fc-scrollgrid th {
+        border-color: var(--color-border-light) !important
+    }
+
+#appointmentsCalendar .apx-fc-dot-event {
+    cursor: pointer
+}
+
+#appointmentsCalendar .fc-daygrid-event {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 6px
+}
+
+#appointmentsCalendar .apx-fc-dot-event .fc-event-title {
+    color: var(--color-primary);
+    font: 700 .72rem var(--font-body)
+}
+
+#appointmentsCalendar .fc-daygrid-event-dot {
+    border-color: var(--color-primary) !important
+}
+
+#appointmentsCalendar .fc-list-event:hover td {
+    background: var(--color-primary-pale) !important;
+    cursor: pointer
+}
+
+#appointmentsCalendar .fc-list-event-title a {
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none
+}
+
+#appointmentsCalendar .fc-list-day-cushion {
+    background: var(--color-surface-2) !important;
+    color: var(--color-text) !important;
+    font-family: var(--font-display) !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important
+}
+
+.apx-calendar-swal.swal2-popup {
+    border-radius: 20px !important;
+    font-family: var(--font-body) !important;
+    padding: 1.75rem !important
+}
+
+.apx-calendar-swal .swal2-title {
+    font: 400 1.35rem var(--font-display) !important;
+    color: var(--color-text) !important;
+    text-align: left !important;
+    padding: 0 0 .75rem !important;
+    margin: 0 !important;
+    border-bottom: 1px solid var(--color-border-light) !important
+}
+
+.apx-calendar-swal .swal2-html-container {
+    text-align: left !important;
+    margin: 1rem 0 0 !important;
+    padding: 4px !important
+}
+
+.apx-calendar-swal .swal2-close {
+    color: var(--color-text-muted) !important;
+    font-size: 1.4rem !important
+}
+
+    .apx-calendar-swal .swal2-close:hover {
+        color: var(--color-text) !important
+    }
+
+.apx-calendar-modal {
+    display: flex;
+    flex-direction: column;
+    gap: .85rem
+}
+
+.apx-calendar-modal__item {
+    display: block;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    border: 1px solid var(--color-border-light);
+    background: var(--color-surface-2);
+    text-decoration: none;
+    transition: border-color var(--transition),transform var(--transition),box-shadow var(--transition)
+}
+
+    .apx-calendar-modal__item:hover {
+        border-color: rgba(42,107,94,.35);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(42,107,94,.08)
+    }
+
+.apx-calendar-modal__item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem
+}
+
+.apx-calendar-modal__patient {
+    color: var(--color-text);
+    font: 700 .95rem var(--font-body);
+    margin: 0 0 .2rem
+}
+
+.apx-calendar-modal__time {
+    color: var(--color-primary);
+    font: 700 .84rem var(--font-body)
+}
+
+.apx-calendar-modal__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+    margin-top: .75rem
+}
+
+.apx-calendar-modal__notes {
+    margin: .75rem 0 0;
+    color: var(--color-text-mid);
+    font: 400 .85rem/1.55 var(--font-body)
+}

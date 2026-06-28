@@ -1,38 +1,157 @@
 @model DoctorConnect.ViewModels.AppointmentViewModel
-
 @{
     ViewData["Title"] = "Appointments";
+    var totalAppointments = Model.Appointments.Count();
+    var upcomingAppointments = Model.Appointments.Count(a => a.AppointmentDate.Date >= DateTime.Today && a.Status != DoctorConnect.Models.AppointmentStatus.Cancelled);
+    var todayCount = Model.Appointments.Count(a => a.AppointmentDate.Date == DateTime.Today);
 }
-
-<div class="content-page">
-    <div class="page-card">
-        <div class="page-card__header">
-            <h1 class="page-card__title">Appointments</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/appointments-shared.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/appointments-index.css" asp-append-version="true" />
+}
+<div class="apx-page">
+    <section class="apx-hero">
+        <div class="apx-hero__header">
+            <div>
+                <span class="apx-hero__eyebrow">Doctor schedule</span>
+                <h1 class="apx-hero__title">Appointments</h1>
+                <p class="apx-hero__subtitle">
+                    @(string.IsNullOrWhiteSpace(Model.DoctorName)
+                                        ? "Manage doctor appointments and daily schedule."
+                                        : $"Manage appointments for Dr. {Model.DoctorName}.")
+                </p>
+            </div>
+            <div class="apx-hero__actions">
+                <a class="apx-btn-create apx-btn-create--ghost"
+                   asp-controller="Appointments" asp-action="Calendar" asp-route-doctorId="@Model.DoctorId">
+                    <i class="fa fa-calendar-day"></i> Calendar view
+                </a>
+                <a class="apx-btn-create"
+                   asp-controller="Appointments" asp-action="Create" asp-route-id="@Model.DoctorId">
+                    <i class="fa fa-plus"></i> New appointment
+                </a>
+            </div>
         </div>
-        <div class="page-card__body">
-            <table class="table table-striped datatable" id="appointmentsTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Patient</th>
-                        <th>Status</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var a in Model.Appointments)
-                    {
-                        <tr>
-                            <td>@a.AppointmentDate.ToShortDateString()</td>
-                            <td>@a.AppointmentTime</td>
-                            <td>@(a.IsGuestPatient ? a.GuestPatientFullName : a.Patient?.User?.FirstName + " " + a.Patient?.User?.LastName)</td>
-                            <td>@a.Status</td>
-                            <td>@a.Notes</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="apx-hero__stats">
+            <div class="apx-stat">
+                <span class="apx-stat__label">Total</span>
+                <span class="apx-stat__value">@totalAppointments</span>
+            </div>
+            <div class="apx-stat apx-stat--upcoming">
+                <span class="apx-stat__label">Upcoming</span>
+                <span class="apx-stat__value">@upcomingAppointments</span>
+            </div>
+            <div class="apx-stat apx-stat--today">
+                <span class="apx-stat__label">Today</span>
+                <span class="apx-stat__value">@todayCount</span>
+            </div>
         </div>
-    </div>
+    </section>
+    <section class="apx-section">
+        <div class="apx-section__header">
+            <div class="apx-section__heading">
+                <h2 class="apx-section__title">All appointments</h2>
+                <p class="apx-section__subtitle">Cards layout for fast scanning.</p>
+            </div>
+            <div class="apx-section__controls">
+                <input class="apx-filter-input"
+                       type="text"
+                       id="apxSearch"
+                       placeholder="Search patient…"
+                       style="width:180px" />
+                <select class="apx-filter-select" id="apxStatus">
+                    <option value="">All statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="NoShow">No-show</option>
+                </select>
+            </div>
+        </div>
+        @if (Model.Appointments.Any())
+        {
+            <div class="apx-cards" id="apxCards">
+                @foreach (var appointment in Model.Appointments)
+                {
+                    var patientName = appointment.IsGuestPatient
+                    ? appointment.GuestPatientFullName
+                    : $"{appointment.Patient?.User?.FirstName} {appointment.Patient?.User?.LastName}".Trim();
+                    patientName = string.IsNullOrWhiteSpace(patientName) ? "Patient not assigned" : patientName;
+                    <article class="apx-card"
+                             data-patient="@patientName.ToLower()"
+                             data-status="@appointment.Status">
+                        <div class="apx-card__top">
+                            <div>
+                                <p class="apx-card__patient">@patientName</p>
+                                <p class="apx-card__date">@appointment.AppointmentDate.ToString("dddd, dd MMMM yyyy")</p>
+                            </div>
+                            <span class="apx-card__time">@DateTime.Today.Add(appointment.AppointmentTime).ToString("hh:mm tt")</span>
+                        </div>
+                        <div class="apx-card__meta">
+                            <span class="apx-badge apx-badge--@appointment.Status">@appointment.Status</span>
+                            @if (appointment.IsGuestPatient)
+                            {
+                                <span class="apx-badge apx-badge--guest"><i class="fa fa-user"></i> Guest</span>
+                            }
+                            @if (appointment.Fees.HasValue)
+                            {
+                                <span class="apx-badge">$@appointment.Fees.Value.ToString("0.##")</span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(appointment.Notes))
+                        {
+                            <p class="apx-card__notes">@appointment.Notes</p>
+                        }
+                        <div class="apx-card__actions">
+                            <a class="apx-btn apx-btn--edit"
+                               asp-controller="Appointments" asp-action="Edit" asp-route-id="@appointment.Id">
+                                <i class="fa fa-pen"></i> Edit
+                            </a>
+                            <form asp-action="Delete" asp-controller="Appointments" method="post" style="margin:0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@appointment.Id" />
+                                <button type="submit"
+                                        class="apx-btn apx-btn--delete sweet-confirm"
+                                        data-confirm-title="Delete appointment?"
+                                        data-confirm-text="This action cannot be undone.">
+                                    <i class="fa fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                }
+            </div>
+            <div class="apx-empty" id="apxNoResults" style="display:none">No appointments match your filters.</div>
+        }
+        else
+        {
+            <div class="apx-empty">No appointments to display.</div>
+        }
+    </section>
 </div>
+@section Scripts {
+    <script>
+        (function(){
+            const search=document.getElementById('apxSearch');
+            const statusSel=document.getElementById('apxStatus');
+            const cards=document.querySelectorAll('.apx-card');
+            const noResults=document.getElementById('apxNoResults');
+            function filter(){
+                const q=(search?.value||'').toLowerCase();
+                const s=(statusSel?.value||'').toLowerCase();
+                let visible=0;
+                cards.forEach(c=>{
+                    const matchQ=!q||c.dataset.patient.includes(q);
+                    const matchS=!s||c.dataset.status.toLowerCase()===s;
+                    const show=matchQ&&matchS;
+                    c.style.display=show?'':'none';
+                    if(show)visible++;
+                });
+                if(noResults)noResults.style.display=visible===0?'':'none';
+            }
+            search?.addEventListener('input',filter);
+            statusSel?.addEventListener('change',filter);
+        })();
+    </script>
+}
