@@ -15,6 +15,7 @@ namespace DoctorConnect.Models
         public List<Appointment> Appointments { get; set; }
         public List<MedicalRecord> MedicalRecords { get; set; }
         public List<Clinic> Clinics { get; set; }
+        public List<Service> Services { get; set; }
         public Specialty Specialty { get; set; }
     }
 }

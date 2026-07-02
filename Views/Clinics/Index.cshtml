@@ -34,6 +34,13 @@
                             <td>@s.Email</td>
                             <td>
                                 <div class="tbl-actions">
+                                    <a class="tbl-action"
+                                       asp-controller="Services"
+                                       asp-action="Clinic"
+                                       asp-route-clinicId="@s.Id"
+                                       title="Manage Services">
+                                        <i class="fa fa-briefcase-medical"></i>
+                                    </a>
                                     <a href="#" class="tbl-action tbl-edit"
                                        data-id="@s.Id"
                                        data-name="@s.Name"

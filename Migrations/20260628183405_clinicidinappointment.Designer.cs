@@ -4,6 +4,7 @@ using DoctorConnect.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoctorConnect.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260628183405_clinicidinappointment")]
+    partial class clinicidinappointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -440,42 +443,6 @@ namespace DoctorConnect.Migrations
                     b.ToTable("Patients");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.Service", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("ClinicId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("DoctorId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<decimal?>("Fees")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClinicId");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("Services");
-                });
-
             modelBuilder.Entity("DoctorConnect.Models.Settings", b =>
                 {
                     b.Property<string>("Id")
@@ -771,23 +738,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.Service", b =>
-                {
-                    b.HasOne("DoctorConnect.Models.Clinic", "Clinic")
-                        .WithMany("Services")
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DoctorConnect.Models.Doctor", "Doctor")
-                        .WithMany("Services")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Clinic");
-
-                    b.Navigation("Doctor");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -844,11 +794,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("Notifications");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.Clinic", b =>
-                {
-                    b.Navigation("Services");
-                });
-
             modelBuilder.Entity("DoctorConnect.Models.Doctor", b =>
                 {
                     b.Navigation("Appointments");
@@ -856,8 +801,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("Availabilities");
 
                     b.Navigation("MedicalRecords");
-
-                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("DoctorConnect.Models.DoctorAvailability", b =>

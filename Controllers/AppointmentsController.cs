@@ -195,8 +195,9 @@ namespace DoctorConnect.Controllers
                 var model = CreateAppointmentViewModel.FromAppointment(appt);
                 var doctor = await _doctorService.GetByIdAsync(appt.DoctorId ?? string.Empty);
                 model.Clinics = doctor.Clinics?.Select(c => new SelectListItem { Value = c.Id, Text = c.Name }).ToList() ?? new List<SelectListItem>();
+                model.SelectedClinicId = appt.ClinicId;
                 var settings = await _settingsService.GetAsync();
-                ViewData["DaysToShow"] = settings?.NumberOfDaysToDisplay ?? 14;
+                ViewData["DaysToShow"] = settings?.NumberOfDaysToDisplay;
                 return View(model);
             }
             catch (Exception ex)
@@ -288,7 +289,7 @@ namespace DoctorConnect.Controllers
                 var filtered = all.Where(p => string.IsNullOrWhiteSpace(q) ||
                     (p.User != null && ((p.User.FirstName + " " + p.User.LastName).Contains(q, StringComparison.OrdinalIgnoreCase))) ||
                     (p.User != null && (p.User.PhoneNumber ?? "").Contains(q, StringComparison.OrdinalIgnoreCase))
-                ).Select(p => new { id = p.Id, text = p.User == null ? "" : (p.User.FirstName + " " + p.User.LastName) }).ToList();
+                ).Select(p => new { id = p.Id, text = p.User == null ? "" : (p.User.FirstName + " " + p.User.LastName + " - " + p.User.Email) }).ToList();
                 return Ok(filtered);
             }
             catch (Exception ex)

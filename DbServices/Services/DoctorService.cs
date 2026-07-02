@@ -57,6 +57,13 @@ namespace DoctorConnect.DbServices.Services
                         .Include(d => d.Clinics));
         }
 
+        public async Task<Doctor?> GetWithServicesAsync(string id)
+        {
+            return await _repo.GetByIdAsync(id, q => q
+                .Include(d => d.User)
+                .Include(d => d.Services));
+        }
+
         public async Task UpdateAsync(EditDoctorViewModel model)
         {
             await _repo.ExecuteInTransactionAsync(async () =>
@@ -85,7 +92,6 @@ namespace DoctorConnect.DbServices.Services
                     doctor.IsActive = model.IsActive;
                     doctor.SpecialtyId = model.SpecialtyId;
 
-                    // Update clinics
                     doctor.Clinics.Clear();
                     if (model.ClinicIds != null)
                     {

@@ -37,6 +37,13 @@
                             <td>
                                 <div class="tbl-actions">
                                     <a class="tbl-action"
+                                       asp-controller="Services"
+                                       asp-action="Doctor"
+                                       asp-route-doctorId="@d.Id"
+                                       title="Manage Services">
+                                        <i class="fa fa-briefcase-medical"></i>
+                                    </a>
+                                    <a class="tbl-action"
                                        asp-controller="Availabilities"
                                        asp-action="Availability"
                                        asp-route-doctorId="@d.Id"

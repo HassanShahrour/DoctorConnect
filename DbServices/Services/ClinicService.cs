@@ -1,6 +1,7 @@
 ﻿using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using DoctorConnect.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace DoctorConnect.DbServices.Services
 {
@@ -11,7 +12,6 @@ namespace DoctorConnect.DbServices.Services
         {
             _repo = repo;
         }
-
         public async Task CreateAsync(Clinic clinic)
         {
             await _repo.AddAsync(clinic);
@@ -36,6 +36,11 @@ namespace DoctorConnect.DbServices.Services
         public async Task<Clinic> GetByIdAsync(string id)
         {
             return await _repo.GetByIdAsync(id);
+        }
+
+        public async Task<Clinic?> GetWithServicesAsync(string id)
+        {
+            return await _repo.GetByIdAsync(id, q => q.Include(c => c.Services));
         }
 
         public async Task UpdateAsync(Clinic clinic)

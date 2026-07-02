@@ -20,6 +20,7 @@ namespace DoctorConnect.Data
         public DbSet<Specialty> Specialties { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<Settings> Settings { get; set; }
+        public DbSet<Service> Services { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -45,6 +46,18 @@ namespace DoctorConnect.Data
                 .HasMany(da => da.BreakTimes)
                 .WithOne(bt => bt.DoctorAvailability)
                 .HasForeignKey(bt => bt.DoctorAvailabilityId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Service>()
+                .HasOne(s => s.Doctor)
+                .WithMany(d => d.Services)
+                .HasForeignKey(s => s.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Service>()
+                .HasOne(s => s.Clinic)
+                .WithMany(c => c.Services)
+                .HasForeignKey(s => s.ClinicId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

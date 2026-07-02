@@ -10,5 +10,6 @@
         public string Email { get; set; }
         public bool IsActive { get; set; } = true;
         public List<Doctor> Doctors { get; set; }
+        public List<Service> Services { get; set; }
     }
 }

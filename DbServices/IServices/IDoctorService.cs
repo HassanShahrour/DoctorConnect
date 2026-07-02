@@ -10,5 +10,6 @@ namespace DoctorConnect.DbServices.IServices
         Task CreateAsync(Doctor doctor);
         Task UpdateAsync(EditDoctorViewModel doctor);
         Task DeleteAsync(string id);
+        Task<Doctor?> GetWithServicesAsync(string id);
     }
 }

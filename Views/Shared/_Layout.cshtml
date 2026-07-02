@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-    <link rel="icon" type="image" href="~/doctorConnect_logo.png" />
+    <link rel="icon" type="image" href="~/mwaedi_bg.png" />
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.css">
@@ -32,7 +32,7 @@
         <nav class="nav">
             <div>
                 <a href="#" class="nav_logo">
-                    <img src="~/icon_transperant.png" class="nav_logo-icon" />
+                    <img src="~/mwaedi_bg.png" class="nav_logo-icon" />
                 </a>
                 <div class="nav_list">
                     <a asp-controller="Home" asp-action="Index" class="nav_link active">
@@ -55,6 +55,41 @@
                         <a asp-controller="Specialities" asp-action="Index" class="nav_link">
                             <i class="fas fa-stethoscope nav_icon"></i>
                             <span class="nav_name">Specialities</span>
+                        </a>
+
+                        <a asp-controller="Patients" asp-action="Index" class="nav_link">
+                            <i class="fas fa-user-injured nav_icon"></i>
+                            <span class="nav_name">Patients</span>
+                        </a>
+
+                        <a asp-controller="Appointments" asp-action="Index" class="nav_link">
+                            <i class="fas fa-calendar-check nav_icon"></i>
+                            <span class="nav_name">Appointments</span>
+                        </a>
+
+                        <a asp-controller="Schedules" asp-action="Index" class="nav_link">
+                            <i class="fas fa-calendar-alt nav_icon"></i>
+                            <span class="nav_name">Schedules</span>
+                        </a>
+
+                        <a asp-controller="Reviews" asp-action="Index" class="nav_link">
+                            <i class="fas fa-star nav_icon"></i>
+                            <span class="nav_name">Reviews</span>
+                        </a>
+
+                        <a asp-controller="Notifications" asp-action="Index" class="nav_link">
+                            <i class="fas fa-bell nav_icon"></i>
+                            <span class="nav_name">Notifications</span>
+                        </a>
+
+                        <a asp-controller="Reports" asp-action="Index" class="nav_link">
+                            <i class="fas fa-chart-line nav_icon"></i>
+                            <span class="nav_name">Reports</span>
+                        </a>
+
+                        <a asp-controller="Subscriptions" asp-action="Index" class="nav_link">
+                            <i class="fas fa-credit-card nav_icon"></i>
+                            <span class="nav_name">Subscriptions</span>
                         </a>
 
                         <a asp-controller="Settings" asp-action="Index" class="nav_link">
@@ -171,11 +206,25 @@
 
             const id = btn.dataset.id;
             const url = btn.dataset.url;
+            const form = btn.closest("form");
+            const token = form?.querySelector('input[name="__RequestVerificationToken"]')?.value
+                || document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
             if (!url) {
                 console.error("Delete URL not provided");
                 return;
             }
+
+            const body = new URLSearchParams();
+            if (id) {
+                body.append("id", id);
+            }
+
+            Object.keys(btn.dataset).forEach(key => {
+                if (key !== "id" && key !== "url") {
+                    body.append(key, btn.dataset[key]);
+                }
+            });
 
             Swal.fire({
                 title: "Are you sure?",
@@ -192,16 +241,14 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
-                        "RequestVerificationToken":
-                            document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                        "RequestVerificationToken": token || ""
                     },
-                    body: new URLSearchParams({
-                        id: id
-                    })
+                    body
                 })
                 .then(res => {
                     if (res.ok) {
                         btn.closest("tr")?.remove();
+                        btn.closest(".svc-card")?.remove();
 
                         Swal.fire({
                             title: "Deleted!",

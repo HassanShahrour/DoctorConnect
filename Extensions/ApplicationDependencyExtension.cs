@@ -22,6 +22,7 @@ namespace DoctorConnect.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISpecialityService, SpecialityService>();
             services.AddScoped<IClinicService, ClinicService>();
+            services.AddScoped<IServiceService, ServiceService>();
             services.AddScoped<ISettingsService, SettingsService>();
             return services;
         }
