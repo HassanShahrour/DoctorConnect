@@ -12,6 +12,7 @@ namespace DoctorConnect.Extensions
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IDoctorService, DoctorService>();
+            services.AddScoped<IDoctorTaskService, DoctorTaskService>();
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IMedicalRecordService, MedicalRecordService>();

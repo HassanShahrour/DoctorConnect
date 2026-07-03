@@ -40,6 +40,14 @@
                         <span class="nav_name">Home</span>
                     </a>
 
+                    @if (User.IsInRole("Doctor"))
+                    {
+                        <a asp-controller="Tasks" asp-action="Index" class="nav_link">
+                            <i class="fas fa-tasks nav_icon"></i>
+                            <span class="nav_name">My Tasks</span>
+                        </a>
+                    }
+
                     @if (User.IsInRole("SuperAdmin"))
                     {
                         <a asp-controller="Doctors" asp-action="Index" class="nav_link">

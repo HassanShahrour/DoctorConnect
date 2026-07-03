@@ -21,6 +21,8 @@ namespace DoctorConnect.Data
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<Settings> Settings { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<DoctorTask> DoctorTasks { get; set; }
+        public DbSet<TaskBullet> TaskBullets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -58,6 +60,18 @@ namespace DoctorConnect.Data
                 .HasOne(s => s.Clinic)
                 .WithMany(c => c.Services)
                 .HasForeignKey(s => s.ClinicId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<DoctorTask>()
+                .HasOne(t => t.Doctor)
+                .WithMany(d => d.Tasks)
+                .HasForeignKey(t => t.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<DoctorTask>()
+                .HasMany(t => t.Bullets)
+                .WithOne(b => b.DoctorTask)
+                .HasForeignKey(b => b.DoctorTaskId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

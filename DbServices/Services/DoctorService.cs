@@ -54,7 +54,15 @@ namespace DoctorConnect.DbServices.Services
                         .ThenInclude(a => a.Patient)
                         .ThenInclude(p => p.User)
                         .Include(d => d.Specialty)
-                        .Include(d => d.Clinics));
+                        .Include(d => d.Clinics)
+                        .Include(d => d.Tasks)
+                        .ThenInclude(t => t.Bullets));
+        }
+
+        public async Task<Doctor?> GetByUserIdAsync(string userId)
+        {
+            var doctors = await _repo.FindAsync(d => d.UserId == userId);
+            return doctors.FirstOrDefault();
         }
 
         public async Task<Doctor?> GetWithServicesAsync(string id)

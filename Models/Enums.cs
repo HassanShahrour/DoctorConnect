@@ -15,4 +15,12 @@
         Female = 2,
         Other = 3
     }
+
+    public enum TaskStatusEnum
+    {
+        Pending = 1,
+        Completed = 2,
+        Canceled = 3,
+        InProgress = 4
+    }
 }

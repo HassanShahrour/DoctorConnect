@@ -4,6 +4,7 @@ using DoctorConnect.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoctorConnect.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260702194643_DoctorTasksFeature")]
+    partial class DoctorTasksFeature
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,41 +326,6 @@ namespace DoctorConnect.Migrations
                     b.ToTable("DoctorAvailabilities");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.DoctorTask", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("DoctorId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Progress")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TaskDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("DoctorTasks");
-                });
-
             modelBuilder.Entity("DoctorConnect.Models.MedicalAttachment", b =>
                 {
                     b.Property<string>("Id")
@@ -542,32 +510,6 @@ namespace DoctorConnect.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Specialties");
-                });
-
-            modelBuilder.Entity("DoctorConnect.Models.TaskBullet", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("DoctorTaskId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<bool>("IsChecked")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorTaskId");
-
-                    b.ToTable("TaskBullets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -784,17 +726,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("Doctor");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.DoctorTask", b =>
-                {
-                    b.HasOne("DoctorConnect.Models.Doctor", "Doctor")
-                        .WithMany("Tasks")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
-                });
-
             modelBuilder.Entity("DoctorConnect.Models.MedicalAttachment", b =>
                 {
                     b.HasOne("DoctorConnect.Models.MedicalRecord", null)
@@ -858,17 +789,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("Clinic");
 
                     b.Navigation("Doctor");
-                });
-
-            modelBuilder.Entity("DoctorConnect.Models.TaskBullet", b =>
-                {
-                    b.HasOne("DoctorConnect.Models.DoctorTask", "DoctorTask")
-                        .WithMany("Bullets")
-                        .HasForeignKey("DoctorTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DoctorTask");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -941,18 +861,11 @@ namespace DoctorConnect.Migrations
                     b.Navigation("MedicalRecords");
 
                     b.Navigation("Services");
-
-                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("DoctorConnect.Models.DoctorAvailability", b =>
                 {
                     b.Navigation("BreakTimes");
-                });
-
-            modelBuilder.Entity("DoctorConnect.Models.DoctorTask", b =>
-                {
-                    b.Navigation("Bullets");
                 });
 
             modelBuilder.Entity("DoctorConnect.Models.MedicalRecord", b =>

@@ -1,0 +1,325 @@
+@model DoctorConnect.ViewModels.DoctorTaskManagementViewModel
+@using DoctorConnect.Models
+@{
+    ViewData["Title"] = "My Tasks";
+}
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/tasks.css" asp-append-version="true" />
+}
+<div class="task-page">
+    <section class="task-hero">
+        <div>
+            <span class="task-hero__eyebrow">Doctor workspace</span>
+            <h1 class="task-hero__title">@Model.DoctorName — <em>Tasks</em></h1>
+            <p class="task-hero__subtitle">Track daily work, update progress, and manage task completion.</p>
+        </div>
+        <button type="button" class="task-hero__btn" data-bs-toggle="modal" data-bs-target="#createTaskModal">
+            <i class="fa fa-plus"></i> Add task
+        </button>
+    </section>
+    @Html.AntiForgeryToken()
+    @if (Model.Tasks.Any())
+    {
+        <section class="task-grid">
+            @foreach (var task in Model.Tasks)
+            {
+                var statusClass = task.Status switch
+                {
+                    TaskStatusEnum.Pending => "task-status--pending",
+                    TaskStatusEnum.InProgress => "task-status--inprogress",
+                    TaskStatusEnum.Completed => "task-status--completed",
+                    TaskStatusEnum.Canceled => "task-status--canceled",
+                    _ => "task-status--pending"
+                };
+                var statusLabel = task.Status switch
+                {
+                    TaskStatusEnum.InProgress => "In Progress",
+                    _ => task.Status.ToString()
+                };
+                var fillClass = task.Status switch
+                {
+                    TaskStatusEnum.Completed => "task-progress__fill task-progress__fill--completed",
+                    TaskStatusEnum.Canceled => "task-progress__fill task-progress__fill--canceled",
+                    _ => "task-progress__fill"
+                };
+                <article class="task-card" data-task-id="@task.Id">
+                    <div class="task-card__header">
+                        <div>
+                            <h3 class="task-card__title">@task.Name</h3>
+                            <div class="task-card__date">@task.TaskDate.ToString("dddd, dd MMM yyyy")</div>
+                        </div>
+                        <span class="task-status @statusClass">@statusLabel</span>
+                    </div>
+                    <p class="task-card__description">
+                        @(string.IsNullOrWhiteSpace(task.Description) ? "No description provided for this task." : task.Description)
+                    </p>
+                    <div class="task-progress">
+                        <div class="task-progress__meta">
+                            <span>Progress</span>
+                            <span class="task-progress__value">@task.Progress%</span>
+                        </div>
+                        <div class="task-progress__bar">
+                            <div class="@fillClass" style="width:@task.Progress%"></div>
+                        </div>
+                        <input type="range"
+                               class="task-progress__slider"
+                               min="0" max="100"
+                               value="@task.Progress"
+                               data-id="@task.Id"
+                               @(task.Status == TaskStatusEnum.Canceled ? "disabled" : null) />
+                    </div>
+                    @if (task.Bullets.Any())
+                    {
+                        <ul class="task-bullets">
+                            @foreach (var bullet in task.Bullets)
+                            {
+                                <li class="@(bullet.IsChecked ? "completed" : string.Empty)">
+                                    <span class="task-bullet-icon @(bullet.IsChecked ? "task-bullet-icon--done" : "task-bullet-icon--todo")">
+                                        <i class="fa @(bullet.IsChecked ? "fa-check" : "fa-circle")" aria-hidden="true"></i>
+                                    </span>
+                                    <span>@bullet.Description</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    <div class="task-card__footer">
+                        <button type="button"
+                                class="task-btn task-btn--edit task-edit-btn"
+                                data-id="@task.Id"
+                                data-name="@task.Name"
+                                data-description="@task.Description"
+                                data-progress="@task.Progress"
+                                data-taskdate="@task.TaskDate.ToString("yyyy-MM-dd")"
+                                data-status="@((int)task.Status)"
+                                data-bullets='@System.Text.Json.JsonSerializer.Serialize(task.Bullets.Select(b => new { b.Id, b.Description, b.IsChecked }))'
+                                data-bs-toggle="modal"
+                                data-bs-target="#editTaskModal">
+                            <i class="fa fa-pen-to-square"></i> Edit
+                        </button>
+                        @if (task.Status == TaskStatusEnum.Canceled)
+                        {
+                            <form asp-action="Uncancel" method="post" class="task-cancel-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@task.Id" />
+                                <button type="submit"
+                                        class="task-btn task-btn--edit sweet-confirm"
+                                        data-confirm-title="Restore task?"
+                                        data-confirm-text="This task status will be recalculated from its current progress.">
+                                    <i class="fa fa-rotate-left"></i> Uncancel
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Cancel" method="post" class="task-cancel-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@task.Id" />
+                                <button type="submit"
+                                        class="task-btn task-btn--cancel sweet-confirm"
+                                        data-confirm-title="Cancel task?"
+                                        data-confirm-text="This task will be marked as canceled.">
+                                    <i class="fa fa-ban"></i> Cancel
+                                </button>
+                            </form>
+                        }
+                        <form asp-action="Delete" method="post" class="task-delete-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@task.Id" />
+                            <button type="submit"
+                                    class="task-btn task-btn--delete sweet-confirm"
+                                    data-confirm-title="Delete task?"
+                                    data-confirm-text="This task will be permanently removed.">
+                                <i class="fa fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            }
+        </section>
+    }
+    else
+    {
+        <section class="task-empty">
+            <div class="task-empty__icon"><i class="fa fa-list-check"></i></div>
+            <h3>No tasks yet</h3>
+            <p>Create your first task to start tracking your work.</p>
+        </section>
+    }
+</div>
+<div class="modal fade" id="createTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content task-modal">
+            <form asp-action="Create" method="post" id="createTaskForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="DoctorId" value="@Model.DoctorId" />
+                <div class="modal-header task-modal__header">
+                    <h5 class="modal-title">Add task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body task-modal__body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Name</label>
+                            <input name="Name" class="form-control" placeholder="e.g. Review patient charts" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Task date</label>
+                            <input name="TaskDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            <textarea name="Description" class="form-control" rows="3" placeholder="Optional description…"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label d-flex justify-content-between align-items-center">
+                                <span>Initial progress</span>
+                                <span id="createProgressValue">0%</span>
+                            </label>
+                            <input name="Progress" id="createTaskProgress" type="range" min="0" max="100" step="1" value="0" class="form-range" />
+                        </div>
+                    </div>
+                    <hr class="task-modal__divider" />
+                    <div class="task-modal__bullets-header">
+                        <span class="task-modal__bullets-title">Checklist items</span>
+                        <button type="button" class="task-modal__add-bullet" onclick="addBulletRow('createBulletsContainer')">
+                            <i class="fa fa-plus"></i> Add item
+                        </button>
+                    </div>
+                    <div id="createBulletsContainer"></div>
+                </div>
+                <div class="modal-footer task-modal__footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content task-modal">
+            <form asp-action="Edit" method="post" id="editTaskForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" id="editTaskId" />
+                <input type="hidden" name="DoctorId" value="@Model.DoctorId" />
+                <div class="modal-header task-modal__header">
+                    <h5 class="modal-title">Edit task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body task-modal__body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Name</label>
+                            <input name="Name" id="editTaskName" class="form-control" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Task date</label>
+                            <input name="TaskDate" id="editTaskDate" type="date" class="form-control" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            <textarea name="Description" id="editTaskDescription" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label d-flex justify-content-between align-items-center">
+                                <span>Progress</span>
+                                <span id="editProgressValue">0%</span>
+                            </label>
+                            <input name="Progress" id="editTaskProgress" type="range" min="0" max="100" step="1" class="form-range" />
+                        </div>
+                    </div>
+                    <hr class="task-modal__divider" />
+                    <div class="task-modal__bullets-header">
+                        <span class="task-modal__bullets-title">Checklist items</span>
+                        <button type="button" class="task-modal__add-bullet" onclick="addBulletRow('editBulletsContainer')">
+                            <i class="fa fa-plus"></i> Add item
+                        </button>
+                    </div>
+                    <div id="editBulletsContainer"></div>
+                </div>
+                <div class="modal-footer task-modal__footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Update task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateProgressLabel(inputId, labelId) {
+            const input = document.getElementById(inputId);
+            const label = document.getElementById(labelId);
+            if (!input || !label) return;
+            label.textContent = `${input.value}%`;
+        }
+
+        function syncBulletCheckbox(checkbox) {
+            const hidden = checkbox.parentElement.querySelector('.bullet-checkbox-hidden');
+            if (hidden) {
+                hidden.disabled = checkbox.checked;
+            }
+        }
+
+        function addBulletRow(containerId, id = '', description = '', isChecked = false, index = null) {
+            const container = document.getElementById(containerId);
+            const idx = index ?? container.querySelectorAll('.bullet-row').length;
+            const row = document.createElement('div');
+            row.className = 'bullet-row';
+            row.innerHTML = `
+                <input type="hidden" name="Bullets[${idx}].Id" value="${id}" />
+                <input type="text" name="Bullets[${idx}].Description" class="form-control" placeholder="Checklist item…" value="${description.replace(/"/g, '&quot;')}" />
+                <div class="form-check d-flex align-items-center gap-2">
+                    <input type="hidden" class="bullet-checkbox-hidden" name="Bullets[${idx}].IsChecked" value="false" ${isChecked ? 'disabled' : ''} />
+                    <input type="checkbox" name="Bullets[${idx}].IsChecked" value="true" class="form-check-input bullet-checkbox" ${isChecked ? 'checked' : ''} />
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.parentElement.remove()"><i class="fa fa-xmark"></i></button>`;
+            container.appendChild(row);
+
+            const checkbox = row.querySelector('.bullet-checkbox');
+            checkbox.addEventListener('change', function () {
+                syncBulletCheckbox(this);
+            });
+            syncBulletCheckbox(checkbox);
+        }
+
+        document.getElementById('createTaskProgress')?.addEventListener('input', function () {
+            updateProgressLabel('createTaskProgress', 'createProgressValue');
+        });
+
+        document.getElementById('editTaskProgress')?.addEventListener('input', function () {
+            updateProgressLabel('editTaskProgress', 'editProgressValue');
+        });
+
+        updateProgressLabel('createTaskProgress', 'createProgressValue');
+        updateProgressLabel('editTaskProgress', 'editProgressValue');
+
+        document.querySelectorAll('.task-edit-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.getElementById('editTaskId').value = this.dataset.id || '';
+                document.getElementById('editTaskName').value = this.dataset.name || '';
+                document.getElementById('editTaskDescription').value = this.dataset.description || '';
+                document.getElementById('editTaskProgress').value = this.dataset.progress || 0;
+                document.getElementById('editTaskDate').value = this.dataset.taskdate || '';
+                updateProgressLabel('editTaskProgress', 'editProgressValue');
+
+                const container = document.getElementById('editBulletsContainer');
+                container.innerHTML = '';
+                JSON.parse(this.dataset.bullets || '[]').forEach((b, i) => addBulletRow('editBulletsContainer', b.Id, b.Description || '', b.IsChecked || false, i));
+            });
+        });
+
+        document.querySelectorAll('.task-progress__slider').forEach(slider => {
+            slider.addEventListener('change', function () {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                const body = new URLSearchParams();
+                body.append('id', this.dataset.id);
+                body.append('progress', this.value);
+                fetch('/Tasks/UpdateProgress', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': token }, body: body.toString() })
+                    .then(r => { if (r.ok) window.location.reload(); });
+            });
+        });
+    </script>
+}
