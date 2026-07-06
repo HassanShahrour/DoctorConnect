@@ -1,0 +1,100 @@
+@model DoctorConnect.ViewModels.RolePermissionsPageViewModel
+@{
+    ViewData["Title"] = "Role Permissions";
+    var avatarColors = new[] { "#2a6b5e", "#c8854c", "#5a6b2a", "#6b2a5a", "#2a5a6b", "#8b3a2a" };
+    string Initials(string name) => string.IsNullOrWhiteSpace(name) ? "?" :
+        string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0].ToString().ToUpper()));
+}
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/permissions.css" asp-append-version="true" />
+}
+<div class="perm-page">
+    <div class="perm-card">
+        <div class="perm-card__header">
+            <div>
+                <span class="perm-card__eyebrow">Access control</span>
+                <h1 class="perm-card__title">Role <em>Permissions</em></h1>
+            </div>
+        </div>
+        <div class="perm-card__body">
+            <form asp-action="Index" method="post">
+                @Html.AntiForgeryToken()
+                <div class="perm-table-wrap">
+                    <table class="perm-table">
+                        <thead>
+                            <tr>
+                                <th class="col-module">Module</th>
+                                <th class="col-perm">Permission</th>
+                                @for (int ri = 0; ri < Model.Roles.Count; ri++)
+                                {
+                                    var role = Model.Roles[ri];
+                                    var color = avatarColors[ri % avatarColors.Length];
+                                    <th class="col-role">
+                                        <div class="perm-role-header">
+                                            <div class="perm-role-avatar" style="background:@color">
+                                                @Initials(role.RoleName)
+                                            </div>
+                                            <span>@role.RoleName</span>
+                                        </div>
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var module in Model.Modules)
+                            {
+                                var perms = module.Permissions.ToList();
+                                for (int pi = 0; pi < perms.Count; pi++)
+                                {
+                                    var permission = perms[pi];
+                                    bool isLastInModule = pi == perms.Count - 1;
+                                    string sepClass = isLastInModule ? "td-module-sep" : "";
+                                    <tr>
+                                        @if (pi == 0)
+                                        {
+                                            <td rowspan="@perms.Count" class="@sepClass" style="vertical-align:top;padding-top:.8rem">
+                                                <span class="perm-module-label">
+                                                    <span class="perm-module-dot"></span>
+                                                    @module.Module
+                                                </span>
+                                            </td>
+                                        }
+                                        <td class="td-perm @sepClass">@permission.Action</td>
+                                        @foreach (var role in Model.Roles)
+                                        {
+                                            var key = $"{permission.PermissionId}_{role.RoleId}";
+                                            var isGranted = permission.RoleAssignments.TryGetValue(role.RoleId, out var assigned) && assigned;
+                                            <td class="td-check @sepClass">
+                                                <input type="hidden" name="Selections.Index" value="@key" />
+                                                <input type="hidden" name="Selections[@key].RoleId" value="@role.RoleId" />
+                                                <input type="hidden" name="Selections[@key].PermissionId" value="@permission.PermissionId" />
+                                                <label class="perm-checkbox-wrap" title="@role.RoleName — @permission.Action">
+                                                    <input type="checkbox"
+                                                           name="Selections[@key].IsGranted"
+                                                           value="true"
+                                                           @(isGranted ? "checked" : null) />
+                                                    <input type="hidden" name="Selections[@key].IsGranted" value="false" />
+                                                    <span class="perm-checkmark">
+                                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <polyline points="20 6 9 17 4 12" />
+                                                        </svg>
+                                                    </span>
+                                                </label>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="perm-footer">
+                    <button type="submit" class="perm-btn-save">
+                        <i class="fa fa-floppy-disk"></i> Save permissions
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

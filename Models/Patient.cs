@@ -8,5 +8,6 @@ namespace DoctorConnect.Models
         public ApplicationUser User { get; set; }
         public List<Appointment> Appointments { get; set; }
         public List<MedicalRecord> MedicalRecords { get; set; }
+        public List<Relative> Relatives { get; set; } = new();
     }
 }

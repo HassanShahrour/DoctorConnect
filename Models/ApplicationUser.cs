@@ -10,5 +10,6 @@ namespace DoctorConnect.Models
         public DateTime? DateOfBirth { get; set; }
         public string Address { get; set; }
         public List<Notification> Notifications { get; set; }
+        public List<PermissionAuditLog> PermissionAuditLogs { get; set; } = new();
     }
 }

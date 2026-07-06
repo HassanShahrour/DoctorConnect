@@ -4,6 +4,7 @@ using DoctorConnect.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoctorConnect.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260703201257_permissions")]
+    partial class permissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -550,41 +553,6 @@ namespace DoctorConnect.Migrations
                     b.ToTable("PermissionAuditLogs");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.Relative", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Gender")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PatientId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Relationship")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
-
-                    b.ToTable("Relatives");
-                });
-
             modelBuilder.Entity("DoctorConnect.Models.RolePermission", b =>
                 {
                     b.Property<string>("RoleId")
@@ -990,17 +958,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("ChangedByUser");
                 });
 
-            modelBuilder.Entity("DoctorConnect.Models.Relative", b =>
-                {
-                    b.HasOne("DoctorConnect.Models.Patient", "Patient")
-                        .WithMany("Relatives")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Patient");
-                });
-
             modelBuilder.Entity("DoctorConnect.Models.RolePermission", b =>
                 {
                     b.HasOne("DoctorConnect.Models.ApplicationUser", "CreatedByUser")
@@ -1151,8 +1108,6 @@ namespace DoctorConnect.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("MedicalRecords");
-
-                    b.Navigation("Relatives");
                 });
 
             modelBuilder.Entity("DoctorConnect.Models.Permission", b =>

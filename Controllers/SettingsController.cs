@@ -1,3 +1,4 @@
+using DoctorConnect.Authorization;
 using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -5,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DoctorConnect.Controllers
 {
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize]
     public class SettingsController : Controller
     {
         private readonly ISettingsService _settingsService;
@@ -15,6 +16,7 @@ namespace DoctorConnect.Controllers
             _settingsService = settingsService;
         }
 
+        [Authorize(Policy = AppPermissions.Settings.Read)]
         public async Task<IActionResult> Index()
         {
             var settings = await _settingsService.GetAsync() ?? new Settings();
@@ -23,6 +25,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Settings.Update)]
         public async Task<IActionResult> Index([Bind("NumberOfDaysToDisplay,Id")] Settings model)
         {
             if (!ModelState.IsValid)

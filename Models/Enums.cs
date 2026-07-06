@@ -23,4 +23,16 @@
         Canceled = 3,
         InProgress = 4
     }
+    public enum Relationship
+    {
+        Father = 1,
+        Mother = 2,
+        Husband = 3,
+        Wife = 4,
+        Son = 5,
+        Daughter = 6,
+        Brother = 7,
+        Sister = 8,
+        Other = 9
+    }
 }

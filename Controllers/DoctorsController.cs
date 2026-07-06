@@ -1,3 +1,4 @@
+using DoctorConnect.Authorization;
 using DoctorConnect.DbServices.IServices;
 using DoctorConnect.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DoctorConnect.Controllers
 {
-    [Authorize(Roles = "Admin,SuperAdmin")]
+    [Authorize]
     public class DoctorsController : Controller
     {
         private readonly IDoctorService _doctorService;
@@ -38,6 +39,7 @@ namespace DoctorConnect.Controllers
             }).ToList();
         }
 
+        [Authorize(Policy = AppPermissions.Doctors.Read)]
         public async Task<IActionResult> Index()
         {
             try
@@ -53,6 +55,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
+        [Authorize(Policy = AppPermissions.Doctors.Read)]
         public async Task<IActionResult> Browse()
         {
             try
@@ -68,6 +71,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
+        [Authorize(Policy = AppPermissions.Doctors.Create)]
         public IActionResult Create()
         {
             try
@@ -89,6 +93,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Doctors.Create)]
         public async Task<IActionResult> Create(CreateDoctorViewModel model)
         {
             try
@@ -133,6 +138,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
+        [Authorize(Policy = AppPermissions.Doctors.Update)]
         public async Task<IActionResult> Edit(string id)
         {
             try
@@ -173,6 +179,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Doctors.Update)]
         public async Task<IActionResult> Edit(EditDoctorViewModel model)
         {
             try
@@ -211,6 +218,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Doctors.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             try
@@ -227,6 +235,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
+        [Authorize(Policy = AppPermissions.Appointments.Read)]
         public async Task<IActionResult> Appointments(string doctorId)
         {
             try

@@ -102,6 +102,7 @@ namespace DoctorConnect.Controllers.Api
                 fullName = string.Join(' ', new[] { d.User?.FirstName, d.User?.LastName }.Where(s => !string.IsNullOrWhiteSpace(s))),
                 specialty = d.Specialty == null ? null : new { id = d.Specialty.Id, name = d.Specialty.Name },
                 clinics = d.Clinics?.Select(c => new { id = c.Id, name = c.Name }).ToList(),
+                services = d.Services?.Select(s => new { id = s.Id, name = s.Name, s.Description }).ToList(),
                 consultationFee = d.ConsultationFee,
                 profilePhoto = d.ProfilePhoto,
                 availableClinicSlots = availabilitiesByClinic

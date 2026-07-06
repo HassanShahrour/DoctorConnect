@@ -1,3 +1,4 @@
+using DoctorConnect.Authorization;
 using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using DoctorConnect.ViewModels;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DoctorConnect.Controllers
 {
-    [Authorize(Roles = "Doctor,Admin,SuperAdmin")]
+    [Authorize]
     public class AppointmentsController : Controller
     {
         private readonly IAppointmentService _appointmentService;
@@ -27,6 +28,7 @@ namespace DoctorConnect.Controllers
             _settingsService = settingsService;
         }
 
+        [Authorize(Policy = AppPermissions.Appointments.Read)]
         public async Task<IActionResult> Index(string doctorId)
         {
             try
@@ -57,6 +59,7 @@ namespace DoctorConnect.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = AppPermissions.Appointments.Read)]
         public async Task<IActionResult> Calendar(string doctorId)
         {
             try
@@ -111,6 +114,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
+        [Authorize(Policy = AppPermissions.Appointments.Create)]
         public async Task<IActionResult> Create(string id)
         {
             try
@@ -143,6 +147,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Appointments.Create)]
         public async Task<IActionResult> Create(CreateAppointmentViewModel model)
         {
             try
@@ -186,6 +191,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
+        [Authorize(Policy = AppPermissions.Appointments.Update)]
         public async Task<IActionResult> Edit(string id)
         {
             try
@@ -210,6 +216,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Appointments.Update)]
         public async Task<IActionResult> Edit(CreateAppointmentViewModel model)
         {
             try
@@ -262,6 +269,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Appointments.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             try
@@ -281,6 +289,7 @@ namespace DoctorConnect.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = AppPermissions.Patients.Read)]
         public async Task<IActionResult> Patients(string q)
         {
             try
@@ -300,6 +309,7 @@ namespace DoctorConnect.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = AppPermissions.Appointments.Read)]
         public async Task<IActionResult> Slots(string doctorId, string clinicId, DateTime date)
         {
             try
@@ -330,6 +340,7 @@ namespace DoctorConnect.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = AppPermissions.Appointments.Read)]
         public async Task<IActionResult> AvailableDates(string doctorId, string clinicId)
         {
             try

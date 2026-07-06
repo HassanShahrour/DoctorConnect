@@ -1,3 +1,4 @@
+using DoctorConnect.Authorization;
 using DoctorConnect.DbServices.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace DoctorConnect.Controllers
             _dashboard = dashboard;
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AppPermissions.Dashboard.Admin)]
         public IActionResult Admin()
         {
             try
@@ -37,7 +38,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Policy = AppPermissions.Dashboard.Doctor)]
         public async Task<IActionResult> Doctor()
         {
             try
@@ -58,7 +59,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Policy = AppPermissions.Dashboard.Patient)]
         public async Task<IActionResult> Patient()
         {
             try

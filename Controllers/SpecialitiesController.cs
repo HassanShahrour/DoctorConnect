@@ -1,4 +1,5 @@
-﻿using DoctorConnect.DbServices.IServices;
+﻿using DoctorConnect.Authorization;
+using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,8 @@ namespace DoctorConnect.Controllers
         {
             _specialityService = specialityService;
         }
+
+        [Authorize(Policy = AppPermissions.Specialities.Read)]
         public async Task<IActionResult> Index()
         {
             try
@@ -30,6 +33,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Specialities.Create)]
         public async Task<IActionResult> Create(Specialty model)
         {
             try
@@ -53,6 +57,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Specialities.Update)]
         public async Task<IActionResult> Edit(Specialty model)
         {
             try
@@ -76,6 +81,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Specialities.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             try

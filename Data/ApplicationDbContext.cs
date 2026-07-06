@@ -1,4 +1,5 @@
 ﻿using DoctorConnect.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace DoctorConnect.Data
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Relative> Relatives { get; set; }
         public DbSet<DoctorAvailability> DoctorAvailabilities { get; set; }
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Notification> Notifications { get; set; }
@@ -23,6 +25,9 @@ namespace DoctorConnect.Data
         public DbSet<Service> Services { get; set; }
         public DbSet<DoctorTask> DoctorTasks { get; set; }
         public DbSet<TaskBullet> TaskBullets { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<PermissionAuditLog> PermissionAuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -38,6 +43,12 @@ namespace DoctorConnect.Data
                 .WithMany(u => u.Appointments)
                 .HasForeignKey(a => a.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Relative>()
+                .HasOne(r => r.Patient)
+                .WithMany(p => p.Relatives)
+                .HasForeignKey(r => r.PatientId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Doctor>()
                 .HasMany(d => d.Clinics)
@@ -73,6 +84,40 @@ namespace DoctorConnect.Data
                 .WithOne(b => b.DoctorTask)
                 .HasForeignKey(b => b.DoctorTaskId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Permission>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+
+            builder.Entity<RolePermission>()
+                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Role)
+                .WithMany()
+                .HasForeignKey(rp => rp.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Permission)
+                .WithMany(p => p.RolePermissions)
+                .HasForeignKey(rp => rp.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(rp => rp.CreatedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<PermissionAuditLog>()
+                .HasOne(p => p.ChangedByUser)
+                .WithMany(u => u.PermissionAuditLogs)
+                .HasForeignKey(p => p.ChangedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<PermissionAuditLog>()
+                .HasIndex(p => p.ChangedAt);
         }
     }
 }

@@ -1,3 +1,4 @@
+using DoctorConnect.Authorization;
 using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using DoctorConnect.ViewModels;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DoctorConnect.Controllers
 {
-    [Authorize(Roles = "Admin,SuperAdmin")]
+    [Authorize]
     public class ServicesController : Controller
     {
         private readonly IServiceService _serviceService;
@@ -20,6 +21,7 @@ namespace DoctorConnect.Controllers
             _clinicService = clinicService;
         }
 
+        [Authorize(Policy = AppPermissions.Services.Read)]
         public async Task<IActionResult> Doctor(string doctorId)
         {
             var doctor = await _doctorService.GetWithServicesAsync(doctorId);
@@ -43,6 +45,7 @@ namespace DoctorConnect.Controllers
             return View("Index", model);
         }
 
+        [Authorize(Policy = AppPermissions.Services.Read)]
         public async Task<IActionResult> Clinic(string clinicId)
         {
             var clinic = await _clinicService.GetWithServicesAsync(clinicId);
@@ -65,6 +68,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Services.Create)]
         public async Task<IActionResult> Create(ServiceManagementViewModel model)
         {
             if (!ModelState.IsValid)
@@ -97,6 +101,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Services.Update)]
         public async Task<IActionResult> Edit(ServiceManagementViewModel model)
         {
             if (!ModelState.IsValid || string.IsNullOrWhiteSpace(model.Id))
@@ -124,6 +129,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Services.Delete)]
         public async Task<IActionResult> Delete(string id, string? doctorId, string? clinicId)
         {
             await _serviceService.DeleteAsync(id);

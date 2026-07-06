@@ -1,5 +1,18 @@
-﻿@{
+﻿@using DoctorConnect.Authorization
+@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
+@{
     var user = User.Identity?.Name;
+    var canReadDoctors = (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.Doctors.Read)).Succeeded;
+    var canReadClinics = (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.Clinics.Read)).Succeeded;
+    var canReadSpecialities = (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.Specialities.Read)).Succeeded;
+    var canReadPatients = (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.Patients.Read)).Succeeded;
+    var canReadAppointments = (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.Appointments.Read)).Succeeded;
+    var canReadTasks = (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.Tasks.Read)).Succeeded;
+    var canReadNotifications = User.Identity?.IsAuthenticated == true;
+    var canReadSettings = (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.Settings.Read)).Succeeded;
+    var canReadPermissions = User.IsInRole("SuperAdmin")
+        || (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.RolePermissions.Read)).Succeeded
+        || (await AuthorizationService.AuthorizeAsync(User, null, AppPermissions.RolePermissions.Update)).Succeeded;
 }
 
 <!DOCTYPE html>
@@ -40,7 +53,7 @@
                         <span class="nav_name">Home</span>
                     </a>
 
-                    @if (User.IsInRole("Doctor"))
+                    @if (canReadTasks)
                     {
                         <a asp-controller="Tasks" asp-action="Index" class="nav_link">
                             <i class="fas fa-tasks nav_icon"></i>
@@ -48,58 +61,64 @@
                         </a>
                     }
 
-                    @if (User.IsInRole("SuperAdmin"))
+                    @if (canReadDoctors)
                     {
                         <a asp-controller="Doctors" asp-action="Index" class="nav_link">
                             <i class="fas fa-user-md nav_icon"></i>
                             <span class="nav_name">Doctors</span>
                         </a>
+                    }
 
+                    @if (canReadClinics)
+                    {
                         <a asp-controller="Clinics" asp-action="Index" class="nav_link">
                             <i class="fas fa-hospital nav_icon"></i>
                             <span class="nav_name">Clinics</span>
                         </a>
+                    }
 
+                    @if (canReadSpecialities)
+                    {
                         <a asp-controller="Specialities" asp-action="Index" class="nav_link">
                             <i class="fas fa-stethoscope nav_icon"></i>
                             <span class="nav_name">Specialities</span>
                         </a>
+                    }
 
+                    @if (canReadPatients)
+                    {
                         <a asp-controller="Patients" asp-action="Index" class="nav_link">
                             <i class="fas fa-user-injured nav_icon"></i>
                             <span class="nav_name">Patients</span>
                         </a>
+                    }
 
+                    @if (canReadPermissions)
+                    {
+                        <a asp-controller="Permissions" asp-action="Index" class="nav_link">
+                            <i class="fas fa-user-shield nav_icon"></i>
+                            <span class="nav_name">Permissions</span>
+                        </a>
+                    }
+
+                    @if (canReadAppointments)
+                    {
                         <a asp-controller="Appointments" asp-action="Index" class="nav_link">
                             <i class="fas fa-calendar-check nav_icon"></i>
                             <span class="nav_name">Appointments</span>
                         </a>
+                    }
 
-                        <a asp-controller="Schedules" asp-action="Index" class="nav_link">
-                            <i class="fas fa-calendar-alt nav_icon"></i>
-                            <span class="nav_name">Schedules</span>
-                        </a>
-
-                        <a asp-controller="Reviews" asp-action="Index" class="nav_link">
-                            <i class="fas fa-star nav_icon"></i>
-                            <span class="nav_name">Reviews</span>
-                        </a>
-
+                    @if (canReadNotifications)
+                    {
                         <a asp-controller="Notifications" asp-action="Index" class="nav_link">
                             <i class="fas fa-bell nav_icon"></i>
                             <span class="nav_name">Notifications</span>
                         </a>
+                    }
 
-                        <a asp-controller="Reports" asp-action="Index" class="nav_link">
-                            <i class="fas fa-chart-line nav_icon"></i>
-                            <span class="nav_name">Reports</span>
-                        </a>
-
-                        <a asp-controller="Subscriptions" asp-action="Index" class="nav_link">
-                            <i class="fas fa-credit-card nav_icon"></i>
-                            <span class="nav_name">Subscriptions</span>
-                        </a>
-
+                    @if (canReadSettings)
+                    {
                         <a asp-controller="Settings" asp-action="Index" class="nav_link">
                             <i class="fas fa-cog nav_icon"></i>
                             <span class="nav_name">Settings</span>

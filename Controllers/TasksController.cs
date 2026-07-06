@@ -1,3 +1,4 @@
+using DoctorConnect.Authorization;
 using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using DoctorConnect.ViewModels;
@@ -7,7 +8,7 @@ using System.Security.Claims;
 
 namespace DoctorConnect.Controllers
 {
-    [Authorize(Roles = "Doctor")]
+    [Authorize]
     public class TasksController : Controller
     {
         private readonly IDoctorTaskService _doctorTaskService;
@@ -19,6 +20,7 @@ namespace DoctorConnect.Controllers
             _doctorService = doctorService;
         }
 
+        [Authorize(Policy = AppPermissions.Tasks.Read)]
         public async Task<IActionResult> Index()
         {
             var doctor = await GetCurrentDoctorAsync();
@@ -46,6 +48,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Tasks.Create)]
         public async Task<IActionResult> Create(DoctorTaskManagementViewModel model)
         {
             var doctor = await GetCurrentDoctorAsync();
@@ -71,6 +74,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Tasks.Update)]
         public async Task<IActionResult> Edit(DoctorTaskManagementViewModel model)
         {
             var doctor = await GetCurrentDoctorAsync();
@@ -103,6 +107,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Tasks.Update)]
         public async Task<IActionResult> UpdateProgress(string id, int progress)
         {
             var doctor = await GetCurrentDoctorAsync();
@@ -123,6 +128,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Tasks.Update)]
         public async Task<IActionResult> Cancel(string id)
         {
             var doctor = await GetCurrentDoctorAsync();
@@ -146,6 +152,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Tasks.Update)]
         public async Task<IActionResult> Uncancel(string id)
         {
             var doctor = await GetCurrentDoctorAsync();
@@ -169,6 +176,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Tasks.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             var doctor = await GetCurrentDoctorAsync();

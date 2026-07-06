@@ -46,8 +46,7 @@ namespace DoctorConnect.Controllers
                 if (result.Succeeded)
                 {
                     var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains("Admin"))
-                        return RedirectToAction("Index", "Home");
+                    TempData["Success"] = "Logged in successfully.";
                     return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError(string.Empty, "Invalid credentials!");
@@ -218,7 +217,6 @@ namespace DoctorConnect.Controllers
             try
             {
                 await _signInManager.SignOutAsync();
-                TempData["Success"] = "Logged out successfully.";
                 return RedirectToAction("Login", "Account");
             }
             catch (Exception ex)

@@ -1,3 +1,4 @@
+using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Extensions;
 using DoctorConnect.Models;
 using Microsoft.AspNetCore.Identity;
@@ -26,8 +27,9 @@ using (var scope = app.Services.CreateScope())
     {
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var permissionService = services.GetRequiredService<IPermissionService>();
 
-        string[] roles = new[] { "SuperAdmin", "Admin", "Doctor", "Patient" };
+        string[] roles = new[] { "SuperAdmin", "Admin", "Doctor", "Patient", "Secretary" };
         foreach (var role in roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
@@ -36,7 +38,9 @@ using (var scope = app.Services.CreateScope())
             }
         }
 
-        //To be removed in production - only for testing purposes
+        await permissionService.SeedAsync();
+
+        // To be removed in production - only for testing purposes
         var superEmail = "superadmin@doctorconnect.com";
         var super = await userManager.FindByEmailAsync(superEmail);
         if (super == null)
@@ -52,6 +56,10 @@ using (var scope = app.Services.CreateScope())
                 Gender = "Male"
             };
             await userManager.CreateAsync(super, "SuperAdmin@123");
+            await userManager.AddToRoleAsync(super, "SuperAdmin");
+        }
+        else if (!await userManager.IsInRoleAsync(super, "SuperAdmin"))
+        {
             await userManager.AddToRoleAsync(super, "SuperAdmin");
         }
     }

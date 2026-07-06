@@ -1,3 +1,4 @@
+using DoctorConnect.Authorization;
 using DoctorConnect.DbServices.IServices;
 using DoctorConnect.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,7 @@ namespace DoctorConnect.Controllers
             _patientService = patientService;
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AppPermissions.Patients.Read)]
         public async Task<IActionResult> Index()
         {
             try
@@ -31,7 +32,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AppPermissions.Patients.Create)]
         public IActionResult Create()
         {
             return View();
@@ -39,7 +40,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AppPermissions.Patients.Create)]
         public async Task<IActionResult> Create(Patient model)
         {
             try
@@ -57,6 +58,7 @@ namespace DoctorConnect.Controllers
             }
         }
 
+        [Authorize(Policy = AppPermissions.Patients.Update)]
         public async Task<IActionResult> Edit(string id)
         {
             try
@@ -75,6 +77,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = AppPermissions.Patients.Update)]
         public async Task<IActionResult> Edit(Patient model)
         {
             try
@@ -94,7 +97,7 @@ namespace DoctorConnect.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Policy = AppPermissions.Patients.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             try

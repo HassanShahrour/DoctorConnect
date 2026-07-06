@@ -1,0 +1,266 @@
+﻿:root {
+    --color-primary: #2a6b5e;
+    --color-primary-mid: #3d8b7a;
+    --color-primary-pale: #e8f4f1;
+    --color-surface: #ffffff;
+    --color-surface-2: #faf9f7;
+    --color-border: #e8e4dd;
+    --color-border-light: #f0ede8;
+    --color-text: #1e2622;
+    --color-text-mid: #4a5550;
+    --color-text-muted: #8a9490;
+    --font-display: 'DM Serif Display',Georgia,serif;
+    --font-body: 'DM Sans',-apple-system,sans-serif;
+    --radius-card: 4px;
+    --radius-pill: 100px;
+    --radius-sm: 8px;
+    --shadow-card: 0 2px 16px rgba(42,107,94,.08),0 1px 4px rgba(0,0,0,.04);
+    --transition: .16s ease;
+}
+
+.perm-page {
+    padding: 1rem 0 2rem;
+/*    max-width: 1100px;*/
+    margin: 0 auto
+}
+
+.perm-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-card);
+    overflow: hidden
+}
+
+.perm-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.3rem 1.75rem;
+    background: linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary-mid) 100%);
+    flex-wrap: wrap
+}
+
+.perm-card__eyebrow {
+    display: block;
+    margin-bottom: .35rem;
+    font: 700 .68rem var(--font-body);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.65)
+}
+
+.perm-card__title {
+    margin: 0;
+    color: #fff;
+    font: 400 1.4rem var(--font-display)
+}
+
+    .perm-card__title em {
+        font-style: italic;
+        opacity: .85
+    }
+
+.perm-card__body {
+    padding: 1.5rem 1.75rem 1.75rem
+}
+
+.perm-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--color-border)
+}
+
+table.perm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+    font-size: .8rem
+}
+
+    table.perm-table thead tr {
+        background: var(--color-surface-2)
+    }
+
+    table.perm-table thead th {
+        padding: .7rem .9rem;
+        border-bottom: 1px solid var(--color-border);
+        font: 700 .65rem var(--font-body);
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        white-space: nowrap
+    }
+
+        table.perm-table thead th.col-module {
+            text-align: left;
+            min-width: 110px
+        }
+
+        table.perm-table thead th.col-perm {
+            text-align: left;
+            min-width: 130px
+        }
+
+        table.perm-table thead th.col-role {
+            text-align: center;
+            min-width: 90px;
+            border-left: 1px solid var(--color-border-light)
+        }
+
+.perm-role-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px
+}
+
+.perm-role-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font: 700 9px var(--font-body);
+    letter-spacing: .04em
+}
+
+table.perm-table tbody tr {
+    background: var(--color-surface);
+    transition: background var(--transition)
+}
+
+    table.perm-table tbody tr:nth-child(even) {
+        background: var(--color-surface-2)
+    }
+
+    table.perm-table tbody tr:hover {
+        background: var(--color-primary-pale)
+    }
+
+table.perm-table tbody td {
+    padding: .62rem .9rem;
+    border-bottom: 1px solid var(--color-border-light);
+    vertical-align: middle
+}
+
+    table.perm-table tbody td.td-module-sep {
+        border-bottom: 1px solid var(--color-border)
+    }
+
+    table.perm-table tbody td.td-perm {
+        color: var(--color-text-mid);
+        font-size: .8rem
+    }
+
+    table.perm-table tbody td.td-check {
+        text-align: center;
+        border-left: 1px solid var(--color-border-light)
+    }
+
+.perm-module-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: 700 .8rem var(--font-body);
+    color: var(--color-primary)
+}
+
+.perm-module-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    flex-shrink: 0
+}
+
+.perm-checkbox-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    cursor: pointer;
+    transition: border-color var(--transition),background var(--transition);
+    position: relative
+}
+
+    .perm-checkbox-wrap:has(input:checked) {
+        border-color: rgba(42,107,94,.4);
+        background: var(--color-primary-pale)
+    }
+
+    .perm-checkbox-wrap input[type=checkbox] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        margin: 0
+    }
+
+.perm-checkmark {
+    display: none;
+    pointer-events: none
+}
+
+.perm-checkbox-wrap:has(input:checked) .perm-checkmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary)
+}
+
+.perm-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .7rem;
+    margin-top: 1.25rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--color-border-light)
+}
+
+.perm-btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    font: 700 .875rem var(--font-body);
+    padding: .62rem 1.7rem;
+    border-radius: var(--radius-pill);
+    border: none;
+    background: linear-gradient(135deg,var(--color-primary),var(--color-primary-mid));
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: .03em;
+    box-shadow: 0 4px 14px rgba(42,107,94,.26);
+    transition: opacity var(--transition),transform var(--transition)
+}
+
+    .perm-btn-save:hover {
+        opacity: .91;
+        transform: translateY(-1px)
+    }
+
+@media(max-width:640px) {
+    .perm-card__header {
+        flex-direction: column;
+        align-items: flex-start
+    }
+
+    .perm-card__body {
+        padding: 1rem
+    }
+
+    .perm-btn-save {
+        width: 100%;
+        justify-content: center
+    }
+}
