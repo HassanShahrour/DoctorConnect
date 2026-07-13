@@ -67,5 +67,15 @@ namespace DoctorConnect.DbServices.Services
             await _repo.SaveChangesAsync();
             return existingRelative;
         }
+
+        public async Task DeleteAsync(string id)
+        {
+            var r = await _repo.GetByIdAsync(id);
+            if (r != null)
+            {
+                await _repo.RemoveAsync(r);
+                await _repo.SaveChangesAsync();
+            }
+        }
     }
 }

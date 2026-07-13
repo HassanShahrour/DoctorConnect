@@ -6,7 +6,8 @@
         Confirmed = 2,
         Completed = 3,
         Cancelled = 4,
-        NoShow = 5
+        NoShow = 5,
+        Rejected = 6
     }
 
     public enum Gender

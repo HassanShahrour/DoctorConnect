@@ -36,7 +36,6 @@ namespace DoctorConnect.Controllers
                 if (string.IsNullOrWhiteSpace(doctorId)) return BadRequest();
                 var doctor = await _doctorService.GetByIdAsync(doctorId);
                 if (doctor == null) return NotFound();
-
                 var appointments = (doctor.Appointments ?? new List<Appointment>())
                     .OrderBy(a => a.AppointmentDate)
                     .ThenBy(a => a.AppointmentTime)
@@ -372,7 +371,7 @@ namespace DoctorConnect.Controllers
                     }
                     if (hasAvailable)
                     {
-                        dates.Add(new { date = d.ToString("yyyy-MM-dd"), day = d.ToString("dddd"), dayNumber = d.Day });
+                        dates.Add(new { date = d.ToString("yyyy-MM-dd"), day = d.ToString("ddd"), dayNumber = d.Day });
                     }
                 }
                 return Ok(dates);

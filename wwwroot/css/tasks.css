@@ -17,7 +17,7 @@
     --font-display: 'DM Serif Display',Georgia,serif;
     --font-body: 'DM Sans',-apple-system,sans-serif;
     --radius-sm: 8px;
-    --radius-card: 16px;
+    --radius-card: 4px;
     --radius-pill: 100px;
     --shadow-card: 0 2px 16px rgba(42,107,94,.08),0 1px 4px rgba(0,0,0,.04);
     --transition: .16s ease;
@@ -97,7 +97,7 @@
 .task-card {
     background: var(--color-surface);
     border: 1px solid var(--color-border-light);
-    border-radius: 14px;
+    border-radius: 4px;
     padding: 1.1rem;
     display: flex;
     flex-direction: column;

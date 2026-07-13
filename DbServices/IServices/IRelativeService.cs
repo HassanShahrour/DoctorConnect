@@ -8,5 +8,6 @@ namespace DoctorConnect.DbServices.IServices
         Task<Relative?> GetByIdAsync(string id);
         Task<Relative> CreateAsync(Relative relative);
         Task<Relative?> UpdateAsync(Relative relative);
+        Task DeleteAsync(string id);
     }
 }

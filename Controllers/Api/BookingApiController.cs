@@ -96,6 +96,7 @@ namespace DoctorConnect.Controllers.Api
             {
                 DoctorId = doctorId,
                 PatientId = model.PatientId,
+                ClinicId = model.ClinicId,
                 AppointmentDate = requestedDate,
                 AppointmentTime = model.AppointmentTime,
                 Notes = model.Notes,
